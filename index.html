@@ -3,1057 +3,1396 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>tutorku — Tutor Mahasiswa Terverifikasi</title>
+<title>tutorku — Platform Tutor Terverifikasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,400;1,9..144,700;1,9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <style>
-/* ═══ TOKENS ══════════════════════════════════════════════════════════ */
 :root{
-  --bg:#F4F1EB;--bg2:#EDE9E1;--card:#FFFFFF;
+  --bg:#F8F6F0;--bg2:#EDE9E1;--card:#FFFFFF;
   --sidebar:#0F3D2E;--sidebar2:#0a2e21;
-  --text:#1A1A1A;--sub:#777;--light:#AAA;
+  --text:#1A1A1A;--sub:#666;--light:#999;
   --primary:#0F3D2E;--primary-dim:#EAF5F0;--primary-mid:#1a5c42;
   --accent:#C4974E;--accent-dim:#FDF5E6;
   --danger:#B91C1C;--border:#E5E0D5;
+  --gold:#B7860B;--gold-bg:#FEFCE8;
+  --silver:#4B5563;--silver-bg:#F3F4F6;
+  --bronze:#92400E;--bronze-bg:#FFFBEB;
   --r-xs:8px;--r-sm:12px;--r:16px;--r-lg:24px;--r-xl:32px;
-  --sidebar-w:256px;--detail-w:440px;
-  --topbar-h:56px;--nav-h:68px;
-  --sh0:0 1px 3px rgba(0,0,0,.05);
-  --sh1:0 2px 12px rgba(0,0,0,.07);
-  --sh2:0 8px 32px rgba(0,0,0,.1);
-  --fdisplay:'Fraunces',Georgia,serif;
-  --fbody:'Plus Jakarta Sans',sans-serif;
-  --fmono:'DM Mono',monospace;
+  --sidebar-w:256px;--detail-w:440px;--topbar-h:56px;--nav-h:68px;
+  --sh0:0 1px 3px rgba(0,0,0,.05);--sh1:0 4px 16px rgba(0,0,0,.06);--sh2:0 8px 32px rgba(0,0,0,.1);
+  --fdisplay:'Fraunces',Georgia,serif;--fbody:'Plus Jakarta Sans',sans-serif;--fmono:'DM Mono',monospace;
 }
-
-/* ═══ RESET ═══════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--fbody);background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:var(--fbody);background-color:var(--bg);background-image:radial-gradient(var(--border) 1px,transparent 1px);background-size:20px 20px;color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
 input,textarea,select,button{font-family:var(--fbody)}
-::-webkit-scrollbar{display:none}
-*{scrollbar-width:none}
-
-/* ═══ GRAIN ════════════════════════════════════════════════════════════ */
-#grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.025;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-
-/* ═══ ROOT LAYOUT ══════════════════════════════════════════════════════ */
+::-webkit-scrollbar{display:none}*{scrollbar-width:none}
 #layout{display:flex;height:100vh;overflow:hidden}
 
-/* ═══ SIDEBAR ══════════════════════════════════════════════════════════ */
-#sidebar{
-  width:var(--sidebar-w);flex-shrink:0;
-  background:var(--sidebar);
-  display:flex;flex-direction:column;
-  position:relative;z-index:10;overflow:hidden;
-}
+/* SIDEBAR */
+#sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--sidebar);display:flex;flex-direction:column;position:relative;z-index:10;overflow:hidden}
 #sidebar::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
 #sidebar::after{content:'';position:absolute;bottom:-80px;left:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.03);pointer-events:none}
-
-.sb-brand{padding:30px 24px 22px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.sb-brand-name{font-family:var(--fdisplay);font-style:italic;font-size:30px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1;margin-bottom:5px}
-.sb-brand-tag{font-size:10px;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-
-.sb-nav{flex:1;padding:18px 14px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
-.sb-item{
-  display:flex;align-items:center;gap:11px;
-  padding:11px 13px;border-radius:10px;
-  cursor:pointer;border:none;background:transparent;
-  color:rgba(255,255,255,.5);font-size:13.5px;font-weight:600;
-  font-family:var(--fbody);width:100%;text-align:left;
-  transition:all .18s;position:relative
-}
+.sb-brand{padding:26px 22px 18px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;cursor:pointer;user-select:none}
+.sb-brand-name{font-family:var(--fdisplay);font-style:italic;font-size:28px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1;margin-bottom:4px}
+.sb-brand-tag{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.sb-nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.5);font-size:13px;font-weight:600;font-family:var(--fbody);width:100%;text-align:left;transition:all .18s}
 .sb-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07)}
 .sb-item.active{background:rgba(255,255,255,.11);color:#fff}
-.sb-icon{width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;opacity:.75}
-.sb-item.active .sb-icon{opacity:1}
-.sb-badge{margin-left:auto;background:rgba(255,255,255,.14);color:rgba(255,255,255,.8);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
-.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:6px 2px}
-.sb-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.1em;text-transform:uppercase;padding:6px 13px 2px}
+.sb-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;opacity:.7}
+.sb-item.active .sb-icon{opacity:1;color:var(--accent)}
+.sb-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.sb-badge-red{margin-left:auto;background:#EF4444;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.sb-divider{height:1px;background:rgba(255,255,255,.07);margin:5px 2px}
+.sb-sec{font-size:10px;font-weight:700;color:rgba(255,255,255,.22);letter-spacing:.1em;text-transform:uppercase;padding:5px 12px 2px}
+.sb-prof{background:rgba(255,255,255,.09);border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:9px;margin-bottom:8px;cursor:pointer;transition:background .15s}
+.sb-prof:hover{background:rgba(255,255,255,.13)}
+.sb-footer{padding:14px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sb-stat{background:rgba(255,255,255,.07);border-radius:8px;padding:9px 11px}
+.sb-stat-n{font-family:var(--fmono);font-size:15px;font-weight:500;color:#fff;line-height:1;margin-bottom:3px}
+.sb-stat-l{font-size:9px;color:rgba(255,255,255,.35);font-weight:500}
 
-.sb-footer{padding:16px 16px 20px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
-.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.sb-stat{background:rgba(255,255,255,.07);border-radius:9px;padding:10px 12px}
-.sb-stat-n{font-family:var(--fmono);font-size:17px;font-weight:500;color:#fff;line-height:1;margin-bottom:3px}
-.sb-stat-l{font-size:10px;color:rgba(255,255,255,.38);font-weight:500}
-
-/* ═══ MAIN AREA ════════════════════════════════════════════════════════ */
+/* MAIN */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-width:0}
-
-/* Mobile topbar */
-#topbar{
-  height:var(--topbar-h);background:var(--bg);
-  display:none;align-items:center;justify-content:space-between;
-  padding:0 18px;flex-shrink:0;
-  border-bottom:1px solid var(--border);position:relative;z-index:5
-}
-.tb-brand{font-family:var(--fdisplay);font-style:italic;font-size:24px;font-weight:800;color:var(--primary);letter-spacing:-.3px}
-.tb-btn{width:36px;height:36px;background:var(--card);border-radius:10px;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px}
-
-/* Screen */
+#topbar{height:var(--topbar-h);background:var(--card);display:none;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;border-bottom:1px solid var(--border);position:relative;z-index:5}
+.tb-brand{font-family:var(--fdisplay);font-style:italic;font-size:22px;font-weight:800;color:var(--primary);letter-spacing:-.3px;cursor:pointer;user-select:none}
+.tb-btn{width:36px;height:36px;background:var(--bg);border-radius:10px;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--primary);position:relative;transition:all .15s}
+.tb-btn:hover{background:var(--primary-dim);border-color:var(--primary)}
+.tb-notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#EF4444;border:2px solid var(--card)}
 #screen{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
 
-/* Bottom nav */
-#bottomnav{
-  height:var(--nav-h);background:var(--card);
-  border-top:1px solid var(--border);
-  display:flex;align-items:flex-start;padding-top:8px;
-  flex-shrink:0;box-shadow:0 -2px 16px rgba(0,0,0,.05);
-  position:relative;z-index:5
-}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;transition:all .18s}
-.nav-icon{width:34px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:9px;transition:all .18s;font-size:17px}
+/* BOTTOM NAV — FIX: icon wraps in div, not on <i> directly */
+#bottomnav{height:var(--nav-h);background:var(--card);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:8px;flex-shrink:0;box-shadow:0 -2px 16px rgba(0,0,0,.05);position:relative;z-index:5;justify-content:space-around}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;transition:all .18s;max-width:80px;position:relative}
+.nav-icon{width:36px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:9px;transition:all .18s;font-size:22px;color:var(--light)}
 .nav-label{font-size:10px;font-weight:500;color:var(--light);transition:color .18s}
-.nav-btn.active .nav-icon{background:var(--primary-dim)}
+.nav-btn.active .nav-icon{background:var(--primary-dim);color:var(--primary)}
 .nav-btn.active .nav-label{color:var(--primary);font-weight:700}
+.nav-red-dot{position:absolute;top:2px;right:calc(50% - 20px);width:8px;height:8px;border-radius:50%;background:#EF4444;border:2px solid var(--card)}
 
-/* ═══ SUBPAGE (fixed, body-level) ══════════════════════════════════════ */
-#subpage{
-  position:fixed;background:var(--bg);
-  z-index:30;overflow-y:auto;display:none
-}
+/* PAGES */
+#subpage{position:fixed;background:var(--bg);z-index:30;overflow-y:auto;display:none}
 #subpage.active{display:block}
-
-/* ═══ PAGES ════════════════════════════════════════════════════════════ */
 .page{display:none;min-height:100%;animation:pgIn .22s ease both}
 .page.active{display:block}
 @keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ═══ TYPOGRAPHY ═══════════════════════════════════════════════════════ */
-h1{font-size:22px;font-weight:800;letter-spacing:-.4px;line-height:1.2}
-h2{font-size:18px;font-weight:700;letter-spacing:-.3px}
-h3{font-size:15px;font-weight:700}
-.display{font-family:var(--fdisplay);font-weight:800}
-.italic{font-family:var(--fdisplay);font-style:italic}
-.mono{font-family:var(--fmono)}
-
-/* ═══ COMPONENTS ═══════════════════════════════════════════════════════ */
+/* BASE COMPONENTS */
 .card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh0);border:1px solid rgba(0,0,0,.04)}
-.sec-title{font-size:11px;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
-
-/* Buttons */
-.btn{border:none;border-radius:var(--r-sm);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;padding:13px 20px;font-size:14px;font-family:var(--fbody);width:100%}
-.btn:active{transform:scale(.97)}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--sidebar2)}
-.btn-secondary{background:transparent;color:var(--primary);border:2px solid var(--primary)}
-.btn-ghost{background:var(--bg);color:var(--sub)}
-.btn-ghost:hover{background:var(--border)}
-.btn-danger{background:#FEF2F2;color:var(--danger);border:1.5px solid #FECACA}
-.btn-amber{background:#FFFBEB;color:#92400E;border:1.5px solid #FDE68A}
-.btn-sm{padding:8px 15px;font-size:12px;width:auto;border-radius:8px}
-/* keep legacy pill-btn alias */
-.pill-btn{border:none;border-radius:var(--r-sm);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;padding:13px 20px;font-size:14px;font-family:var(--fbody);width:100%}
+.sec-title{font-size:11px;font-weight:700;color:var(--light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.05em}
+.input{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font-size:14px;color:var(--text);background:var(--card);width:100%;transition:border-color .15s;font-family:var(--fbody);box-shadow:inset 0 2px 4px rgba(0,0,0,.02)}
+.input:focus{outline:none;border-color:var(--primary)}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23777'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px}
+.pill-btn{border:none;border-radius:var(--r-sm);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;padding:12px 20px;font-size:14px;font-family:var(--fbody);width:100%;box-shadow:var(--sh0)}
 .pill-btn:active{transform:scale(.97)}
 .pill-btn.primary{background:var(--primary);color:#fff}
-.pill-btn.secondary{background:transparent;color:var(--primary);border:2px solid var(--primary)}
-.pill-btn.ghost{background:var(--bg);color:var(--sub)}
+.pill-btn.primary:hover{background:var(--sidebar2)}
+.pill-btn.secondary{background:var(--card);color:var(--primary);border:2px solid var(--primary)}
+.pill-btn.ghost{background:var(--bg);color:var(--sub);box-shadow:none}
 .pill-btn.danger{background:#FEF2F2;color:var(--danger);border:1.5px solid #FECACA}
 .pill-btn.amber{background:#FFFBEB;color:#92400E;border:1.5px solid #FDE68A}
-.pill-btn.sm{padding:8px 15px;font-size:12px;width:auto;border-radius:8px}
-
-/* Input */
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.06em}
-.input{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;font-size:14px;color:var(--text);background:var(--card);width:100%;transition:border-color .15s;font-family:var(--fbody)}
-.input:focus{outline:none;border-color:var(--primary)}
-textarea.input{resize:vertical}
-
-/* Tags & badges */
-.tag{background:var(--bg);color:var(--sub);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500}
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
-
-/* Progress bar */
-.progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:var(--primary);border-radius:2px;transition:width .3s ease}
-
-/* Page header (subpage) */
-.page-header{display:flex;align-items:center;gap:12px;padding:14px 20px;background:var(--bg);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--border)}
-.back-btn{width:34px;height:34px;border-radius:9px;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:background .15s}
-.back-btn:active{background:var(--border)}
-
-/* Sum rows */
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F0EDE5}
+.pill-btn.sm{padding:8px 14px;font-size:12px;width:auto;border-radius:var(--r-xs)}
+.tag{background:var(--bg);color:var(--sub);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:500;border:1px solid var(--border)}
+.achieve-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:#FDF5E6;color:#92400E;border:1px solid #FDE68A}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;z-index:1;position:relative;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar.slim{height:3px}
+.progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .5s ease}
+.page-header{display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(248,246,240,.97);backdrop-filter:blur(8px);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--border)}
+.back-btn{width:34px;height:34px;border-radius:9px;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all .15s;color:var(--text)}
+.back-btn:hover{background:var(--primary-dim);border-color:var(--primary);color:var(--primary)}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
 .sum-row:last-child{border-bottom:none}
+.settings-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--card);border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.settings-item:hover{background:var(--bg)}
+.settings-item:first-child{border-top-left-radius:12px;border-top-right-radius:12px}
+.settings-item:last-child{border-bottom:none;border-bottom-left-radius:12px;border-bottom-right-radius:12px}
 
-/* Tutor card */
-.tutor-card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--sh0);border:1px solid rgba(0,0,0,.04);cursor:pointer;transition:all .18s}
-.tutor-card:hover{box-shadow:var(--sh1);transform:translateY(-1px);border-color:var(--border)}
-.tutor-card:active{transform:scale(.99)}
+/* ENHANCED TUTOR CARD */
+.tutor-card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--sh1);border:1px solid rgba(0,0,0,.04);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.tutor-card:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.tutor-card-banner{height:64px;position:relative;display:flex;align-items:flex-end;padding:0 16px 10px;overflow:hidden}
+.tutor-card-banner-bg{position:absolute;inset:0;opacity:.12}
+.tutor-card-banner-pattern{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.15) 1px,transparent 1px);background-size:12px 12px}
+.tutor-card-banner-icon{position:absolute;right:-8px;top:-8px;font-size:72px;opacity:.12;line-height:1}
+.tutor-card-body{padding:12px 16px 16px}
+.avail-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.avail-on{background:#ECFDF5;color:#059669;border:1px solid #A7F3D0}
+.avail-off{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA}
+.fav-btn{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--sh0);transition:all .18s;flex-shrink:0}
+.fav-btn:hover{transform:scale(1.15)}
+.fav-btn.active{background:#FEF2F2}
 
-/* Avatar */
-.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0}
+/* HOME HERO */
+.hero{margin:16px;border-radius:var(--r-xl);padding:30px 22px;background:var(--primary);color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh2)}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:16px 16px;opacity:.4}
+.hero-eye{font-size:10px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.hero-eye::before{content:'';width:16px;height:1.5px;background:rgba(255,255,255,.35)}
+.hero-title{font-family:var(--fdisplay);font-size:26px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px;letter-spacing:-.5px;position:relative;z-index:1}
+.hero-title em{font-style:italic;color:var(--accent-dim)}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:20px;position:relative;z-index:1}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--card);color:var(--primary);border-radius:11px;padding:11px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fbody);transition:all .15s;position:relative;z-index:1;box-shadow:0 4px 12px rgba(0,0,0,.1);border:none}
+.hero-cta:hover{transform:translateY(-1px)}
+.quick-cat{display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);padding:11px 6px;border-radius:13px;cursor:pointer;transition:all .15s;box-shadow:var(--sh0)}
+.quick-cat:active{transform:scale(.95);border-color:var(--primary)}
+.promo-banner{background:var(--primary);color:#fff;border-radius:var(--r-xl);padding:22px;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(15,61,46,.15);border:1px solid rgba(0,0,0,.1)}
+.promo-banner::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 8px);pointer-events:none}
+.role-card{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--sh0)}
+.role-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--sh2);background:var(--primary-dim)}
 
-/* Subject chips */
-.subj-wrap{display:flex;flex-wrap:wrap;gap:8px}
-.subj-chip{border:1.5px solid var(--border);border-radius:20px;padding:7px 14px;cursor:pointer;font-size:13px;font-weight:500;background:var(--card);transition:all .15s;font-family:var(--fbody)}
-.subj-chip.sel{border-color:var(--primary);background:var(--primary-dim);color:var(--primary);font-weight:700}
-.subj-chip:active{transform:scale(.97)}
+/* POINTS / XP */
+.points-card{background:linear-gradient(135deg,var(--sidebar) 0%,var(--primary-mid) 100%);border-radius:var(--r-lg);padding:20px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh2)}
+.points-card::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:14px 14px;pointer-events:none}
+.xp-number{font-family:var(--fmono);font-size:42px;font-weight:500;color:#fff;line-height:1;letter-spacing:-1px}
+.xp-label{font-size:10px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.xp-progress-bg{height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin:10px 0 6px}
+.xp-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#E8B96A);border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.tier-badge-lg{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:800}
+.tier-badge-lg.Gold{background:var(--gold-bg);color:var(--gold);border:1.5px solid #FDE68A}
+.tier-badge-lg.Silver{background:var(--silver-bg);color:var(--silver);border:1.5px solid #D1D5DB}
+.tier-badge-lg.Bronze{background:var(--bronze-bg);color:var(--bronze);border:1.5px solid #FCD34D}
+.xp-log-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.xp-log-item:last-child{border-bottom:none}
+.xp-plus{font-family:var(--fmono);font-size:13px;font-weight:500;color:#059669}
 
-/* Slot grid */
-.slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.slot-item{border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s;text-align:left;background:var(--card);font-family:var(--fbody)}
-.slot-item.sel{border-color:var(--primary);background:var(--primary-dim)}
-.slot-item:active{transform:scale(.97)}
+/* STUDENT ROW */
+.student-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;border-radius:var(--r-xs)}
+.student-row:last-child{border-bottom:none}
+.student-row:hover{padding-left:4px}
+.review-pending-card{background:var(--card);border-radius:14px;padding:14px 16px;border:1.5px solid #FDE68A;box-shadow:var(--sh0);cursor:pointer;transition:all .18s}
+.review-pending-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.history-item{background:var(--card);border-radius:14px;padding:14px 16px;border:1px solid rgba(0,0,0,.04);box-shadow:var(--sh0);margin-bottom:8px;border-left:4px solid var(--primary)}
 
-/* Tier selector */
-.tier-sel{display:flex;gap:8px}
-.tier-item{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:9px 6px;cursor:pointer;text-align:center;font-size:12px;font-weight:700;background:var(--card);transition:all .15s;font-family:var(--fbody)}
+/* BOOKING */
+.slot-item{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .15s;text-align:center;background:var(--card)}
+.slot-item:hover,.slot-item.sel{border-color:var(--primary);background:var(--primary-dim)}
+.slot-item.sel .slot-time{color:var(--primary)}
 
-/* Admin */
-.admin-tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
-.admin-tab{flex:1;padding:13px 8px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--light);border-bottom:2px solid transparent;transition:all .15s;text-align:center;font-family:var(--fbody)}
-.admin-tab.active{color:var(--primary);border-bottom-color:var(--primary)}
-.gate-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.notif-card{background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--sh0);border:1px solid rgba(0,0,0,.04)}
+/* NOTIF PANEL */
+#notif-panel{position:fixed;top:var(--topbar-h);right:0;width:320px;background:var(--card);border-left:1px solid var(--border);border-bottom:1px solid var(--border);border-bottom-left-radius:var(--r-lg);box-shadow:var(--sh2);z-index:40;display:none;max-height:400px;overflow-y:auto}
+#notif-panel.open{display:block;animation:notifIn .2s ease}
+@keyframes notifIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.notif-item:hover{background:var(--bg)}
+.notif-item.unread{background:#EAF5F0}
+.notif-item:last-child{border-bottom:none}
 
-/* ═══ HOME HERO ════════════════════════════════════════════════════════ */
-.hero{
-  margin:16px;border-radius:var(--r-xl);padding:32px 24px;
-  background:var(--primary);color:#fff;position:relative;overflow:hidden
-}
-.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05)}
-.hero::after{content:'';position:absolute;bottom:-70px;left:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04)}
-.hero-eye{font-size:10px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.hero-eye::before{content:'';width:18px;height:1.5px;background:rgba(255,255,255,.3)}
-.hero-title{font-family:var(--fdisplay);font-size:28px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px;letter-spacing:-.5px}
-.hero-title em{font-style:italic;color:rgba(255,255,255,.72)}
-.hero-sub{font-size:13px;color:rgba(255,255,255,.62);line-height:1.65;margin-bottom:22px}
-.hero-cta{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);color:#fff;border-radius:11px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fbody);transition:all .15s;backdrop-filter:blur(8px)}
-.hero-cta:hover{background:rgba(255,255,255,.2)}
+/* FILTER PANEL */
+.filter-chip{border:1.5px solid var(--border);background:var(--card);border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--fbody);color:var(--sub);transition:all .15s;box-shadow:var(--sh0)}
+.filter-chip.active{border-color:var(--primary);background:var(--primary-dim);color:var(--primary)}
 
-/* Stats strip */
-.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px;margin-top:16px}
-.stat-card{background:var(--card);border-radius:14px;padding:13px 10px;text-align:center;box-shadow:var(--sh0);border:1px solid rgba(0,0,0,.04)}
-.stat-n{font-family:var(--fmono);font-size:19px;font-weight:500;color:var(--primary);line-height:1;margin-bottom:4px}
-.stat-l{font-size:10px;color:var(--light);font-weight:600}
-
-/* Gate cards */
-.gate-card{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:14px;padding:13px 16px;box-shadow:var(--sh0);border:1px solid rgba(0,0,0,.04)}
-.gate-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.gate-num{margin-left:auto;font-family:var(--fmono);font-size:11px;font-weight:500;padding:3px 9px;border-radius:7px;flex-shrink:0}
-
-/* Toast */
-#toast{
-  position:fixed;bottom:calc(var(--nav-h) + 10px);left:50%;
-  transform:translateX(-50%) translateY(8px);
-  background:var(--text);color:#fff;border-radius:var(--r-sm);
-  padding:10px 18px;font-size:13px;font-weight:500;z-index:9998;
-  opacity:0;transition:all .25s;pointer-events:none;
-  white-space:nowrap;max-width:calc(100% - 40px)
-}
+/* TOAST */
+#toast{position:fixed;bottom:calc(var(--nav-h)+14px);left:50%;transform:translateX(-50%) translateY(8px);background:#1A1A1A;color:#fff;border-radius:var(--r-sm);padding:11px 18px;font-size:13px;font-weight:600;z-index:9998;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:calc(100% - 40px);box-shadow:0 10px 25px rgba(0,0,0,.2)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ═══ RESPONSIVE BREAKPOINTS ═══════════════════════════════════════════ */
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal-sheet{background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;width:100%;max-width:580px;padding:0;animation:sheetIn .25s ease}
+@keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 20px}
 
-/* Mobile (<640px) */
+/* RESPONSIVE */
 @media(max-width:639px){
-  #sidebar{display:none}
-  #topbar{display:flex}
-  #subpage{inset:0;animation:spMobile .22s ease}
-  @keyframes spMobile{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+  #sidebar{display:none}#topbar{display:flex}
+  #subpage{inset:0;animation:spM .22s ease}
+  @keyframes spM{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+  #notif-panel{right:8px;width:calc(100vw - 16px)}
 }
-
-/* Tablet (640–1023px) */
 @media(min-width:640px) and (max-width:1023px){
-  #sidebar{display:none}
-  #topbar{display:flex}
+  #sidebar{display:none}#topbar{display:flex}
   #layout{background:#E8E4DC;justify-content:center}
   #main{max-width:580px;width:100%;background:var(--bg);box-shadow:var(--sh2)}
-  #subpage{inset:0;max-width:580px;left:50%;transform:translateX(-50%);animation:spTablet .22s ease}
+  #subpage{inset:0;max-width:580px;left:50%;transform:translateX(-50%);animation:spT .22s ease}
   #subpage.active{transform:translateX(-50%)}
-  @keyframes spTablet{from{opacity:0;transform:translateX(calc(-50% + 10px))}to{opacity:1;transform:translateX(-50%)}}
-  #toast{max-width:540px}
+  @keyframes spT{from{opacity:0;transform:translateX(calc(-50% + 10px))}to{opacity:1;transform:translateX(-50%)}}
 }
-
-/* Desktop (≥1024px) */
 @media(min-width:1024px){
-  #sidebar{display:flex}
-  #topbar{display:none}
-  #bottomnav{display:none}
-  #toast{bottom:20px}
-
-  /* Detail panel slides in from right */
-  #subpage{
-    top:0;right:0;bottom:0;
-    width:var(--detail-w);
-    border-left:1px solid var(--border);
-    box-shadow:-6px 0 28px rgba(0,0,0,.08);
-    animation:spDesktop .25s ease
-  }
-  @keyframes spDesktop{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-
-  /* Browse: 2-col grid */
+  #sidebar{display:flex}#topbar{display:none}#bottomnav{display:none}#toast{bottom:20px}
+  #subpage{top:0;right:0;bottom:0;width:var(--detail-w);border-left:1px solid var(--border);box-shadow:-6px 0 28px rgba(0,0,0,.08);animation:spD .25s ease}
+  @keyframes spD{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
   #tutor-list{display:grid!important;grid-template-columns:1fr 1fr;gap:12px}
-
-  /* Hero & stats padding */
-  .hero{margin:20px}
-  .stats-strip{padding:0 20px}
-
-  /* Wider home sections */
   .home-section{padding-left:20px;padding-right:20px}
 }
-
-/* Large desktop (≥1280px) */
-@media(min-width:1280px){
-  :root{--sidebar-w:272px}
-  #screen > .page > *{max-width:none}
-}
+@media(min-width:1280px){:root{--sidebar-w:272px}}
 </style>
 </head>
 <body>
-<div id="grain"></div>
-
 <div id="layout">
 
-  <!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
-  <nav id="sidebar">
-    <div class="sb-brand">
-      <div class="sb-brand-name">tutorku</div>
-      <div class="sb-brand-tag">Platform tutor mahasiswa</div>
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-brand" onclick="brandTap()">
+    <div class="sb-brand-name">tutorku</div>
+    <div class="sb-brand-tag">Platform tutor mahasiswa</div>
+  </div>
+  <div class="sb-nav">
+    <div id="sb-profile" style="display:none" class="sb-prof" onclick="navTo('akun')">
+      <div class="avatar" id="sb-avatar" style="width:32px;height:32px;font-size:12px;background:var(--accent)">?</div>
+      <div style="min-width:0">
+        <div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="sb-username">—</div>
+        <div style="color:rgba(255,255,255,.45);font-size:10px;font-weight:600" id="sb-role">—</div>
+      </div>
+      <i class="ph ph-caret-right" style="margin-left:auto;color:rgba(255,255,255,.3);font-size:14px;flex-shrink:0"></i>
+    </div>
+    <div class="sb-sec">Menu Utama</div>
+    <button class="sb-item active" id="snav-home" onclick="navTo('home')"><i class="ph-fill ph-house sb-icon"></i><span>Beranda</span></button>
+    <button class="sb-item" id="snav-browse" onclick="navTo('browse')"><i class="ph-fill ph-magnifying-glass sb-icon"></i><span>Cari Tutor</span></button>
+    <div class="sb-divider"></div>
+    <div class="sb-sec">Aktivitas</div>
+    <button class="sb-item" id="snav-akun-tutor" onclick="navTo('akun')" style="display:none"><i class="ph-fill ph-chart-pie-slice sb-icon"></i><span>Dasbor Tutor</span></button>
+    <button class="sb-item" id="snav-akun-student" onclick="navTo('akun')" style="display:none"><i class="ph-fill ph-chart-line-up sb-icon"></i><span>Progres Belajar</span><span class="sb-badge-red" id="sb-badge-review" style="display:none">!</span></button>
+    <button class="sb-item" id="snav-daftar" onclick="navTo('daftar')"><i class="ph-fill ph-chalkboard-teacher sb-icon"></i><span>Daftar Jadi Tutor</span></button>
+    <div class="sb-divider"></div>
+    <div class="sb-sec">Akun & Pengaturan</div>
+    <button class="sb-item" id="snav-login" onclick="navTo('login')"><i class="ph-fill ph-sign-in sb-icon"></i><span>Masuk / Daftar</span></button>
+    <button class="sb-item" id="snav-settings" onclick="navTo('settings')" style="display:none"><i class="ph-fill ph-gear sb-icon"></i><span>Pengaturan</span></button>
+    <button class="sb-item" id="snav-logout" onclick="logout()" style="display:none;color:#FCA5A5"><i class="ph-fill ph-sign-out sb-icon" style="color:#FCA5A5"></i><span>Keluar</span></button>
+    <button class="sb-item" id="snav-admin" onclick="navTo('admin')" style="display:none"><i class="ph-fill ph-shield-star sb-icon"></i><span>Admin Panel</span></button>
+  </div>
+  <div class="sb-footer">
+    <div class="sec-title" style="color:rgba(255,255,255,.22);margin-bottom:8px">Komitmen Kami</div>
+    <div class="sb-stats">
+      <div class="sb-stat"><div class="sb-stat-n">Aman</div><div class="sb-stat-l">Sistem Escrow</div></div>
+      <div class="sb-stat"><div class="sb-stat-n">Ketat</div><div class="sb-stat-l">Seleksi 3-Gate</div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <header id="topbar">
+    <div class="tb-brand" onclick="brandTap()">tutorku</div>
+    <div style="display:flex;gap:8px">
+      <button class="tb-btn" id="tb-notif-btn" onclick="toggleNotif()" title="Notifikasi"><i class="ph ph-bell" style="font-size:18px"></i><span class="tb-notif-dot" id="notif-dot" style="display:none"></span></button>
+      <button class="tb-btn" id="tb-akun-btn" onclick="navTo('akun')" style="display:none" title="Akun"><i class="ph ph-user-circle" style="font-size:18px"></i></button>
+      <button class="tb-btn" onclick="navTo('settings')"><i class="ph ph-gear" style="font-size:18px"></i></button>
+    </div>
+  </header>
+
+  <div id="screen">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-eye">Platform Tutor Pendamping</div>
+        <div class="hero-title">Belajar dari <em>kakak</em><br>yang sudah duluan.</div>
+        <p class="hero-sub">Tutor mahasiswa untuk SMP, SMA & Universitas.<br>Sistem paket aman, laporan belajar transparan.</p>
+        <button class="hero-cta" onclick="navTo('browse')"><i class="ph-bold ph-magnifying-glass"></i> Cari tutor sekarang</button>
+      </div>
+      <div id="home-tutor-banner" style="display:none;margin:0 16px 4px">
+        <div style="background:var(--accent-dim);border:1.5px solid #FDE68A;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+          <i class="ph-fill ph-star" style="font-size:26px;color:var(--accent);flex-shrink:0"></i>
+          <div><div style="font-size:13px;font-weight:800;color:#78350F" id="tutor-banner-xp">—</div>
+          <div style="font-size:11px;color:#92400E">Lihat dasbor untuk rincian poinmu</div></div>
+          <button class="pill-btn primary sm" style="margin-left:auto;flex-shrink:0" onclick="navTo('akun')">Dasbor</button>
+        </div>
+      </div>
+      <div style="padding:20px 16px 0" class="home-section" id="home-promo-section">
+        <div class="promo-banner">
+          <div style="background:rgba(255,255,255,.15);color:#FDE68A;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;z-index:1;position:relative;width:fit-content"><i class="ph-fill ph-seal-check"></i> Standar Jelas, Belajar Nyaman</div>
+          <h3 style="font-family:var(--fdisplay);font-size:19px;font-weight:800;line-height:1.3;margin-bottom:10px;z-index:1;position:relative">Tutor Terkurasi, Dedikasi Teruji.</h3>
+          <div style="display:flex;gap:16px;align-items:center;justify-content:center;z-index:1;position:relative;background:rgba(0,0,0,.1);padding:11px;border-radius:11px">
+            <div style="text-align:center"><i class="ph-fill ph-identification-card" style="font-size:22px;color:#FDE68A;margin-bottom:3px;display:block"></i><div style="font-size:10px;font-weight:700">Verifikasi KTM</div></div>
+            <div style="text-align:center"><i class="ph-fill ph-microphone-stage" style="font-size:22px;color:#FDE68A;margin-bottom:3px;display:block"></i><div style="font-size:10px;font-weight:700">Uji Mengajar</div></div>
+            <div style="text-align:center"><i class="ph-fill ph-books" style="font-size:22px;color:#FDE68A;margin-bottom:3px;display:block"></i><div style="font-size:10px;font-weight:700">Validasi Nilai</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:22px 16px 0" class="home-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="sec-title" style="margin-bottom:0">Tutor Rekomendasi</div>
+          <button onclick="navTo('browse')" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:var(--primary);font-family:var(--fbody)">Lihat semua →</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px" id="home-tutors"></div>
+      </div>
+      <div style="height:28px"></div>
     </div>
 
-    <div class="sb-nav">
-      <div class="sb-section-label">Menu</div>
-      <button class="sb-item active" id="snav-home" onclick="navTo('home')">
-        <span class="sb-icon">🏠</span>Beranda
-      </button>
-      <button class="sb-item" id="snav-browse" onclick="navTo('browse')">
-        <span class="sb-icon">🔍</span>Cari Tutor
-      </button>
-      <button class="sb-item" id="snav-daftar" onclick="navTo('daftar')">
-        <span class="sb-icon">✏️</span>Daftar Jadi Tutor
-      </button>
-      <div class="sb-divider"></div>
-      <div class="sb-section-label">Pengelolaan</div>
-      <button class="sb-item" id="snav-admin" onclick="navTo('admin')">
-        <span class="sb-icon">⚙️</span>Admin Panel
-        <span class="sb-badge">3</span>
-      </button>
+    <!-- BROWSE -->
+    <div class="page" id="page-browse">
+      <div style="padding:18px 16px 12px;position:sticky;top:0;background:rgba(248,246,240,.96);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--border)">
+        <h2 style="margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ph-bold ph-magnifying-glass"></i> Cari Tutor</h2>
+        <div style="position:relative;margin-bottom:10px">
+          <i class="ph ph-magnifying-glass" style="position:absolute;left:12px;top:12px;color:var(--sub);font-size:16px"></i>
+          <input class="input" id="search-input" placeholder="Nama tutor atau mata pelajaran..." oninput="filterTutors()" style="padding-left:36px">
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+          <div class="quick-cat" onclick="setSubjFilter('Matematika')"><i class="ph-fill ph-function" style="font-size:22px;color:var(--primary)"></i><span style="font-size:10px;font-weight:600">Hitungan</span></div>
+          <div class="quick-cat" onclick="setSubjFilter('Fisika')"><i class="ph-fill ph-atom" style="font-size:22px;color:var(--primary)"></i><span style="font-size:10px;font-weight:600">Sains</span></div>
+          <div class="quick-cat" onclick="setSubjFilter('Bahasa Inggris')"><i class="ph-fill ph-translate" style="font-size:22px;color:var(--primary)"></i><span style="font-size:10px;font-weight:600">Bahasa</span></div>
+          <div class="quick-cat" onclick="setSubjFilter('Pemrograman')"><i class="ph-fill ph-code" style="font-size:22px;color:var(--primary)"></i><span style="font-size:10px;font-weight:600">Coding</span></div>
+        </div>
+        <!-- Filters: subjects + price/tier -->
+        <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:4px" id="subject-filters"></div>
+        <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:2px" id="tier-filters">
+          <span style="font-size:10px;font-weight:700;color:var(--light);white-space:nowrap;align-self:center">TIER:</span>
+          <button class="filter-chip active" onclick="setTierFilter('',this)">Semua</button>
+          <button class="filter-chip" onclick="setTierFilter('Gold',this)">&#x1F451; Gold</button>
+          <button class="filter-chip" onclick="setTierFilter('Silver',this)">&#x1F948; Silver</button>
+          <button class="filter-chip" onclick="setTierFilter('Bronze',this)">&#x1F949; Bronze</button>
+        </div>
+      </div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:14px" id="tutor-list"></div>
     </div>
 
-    <div class="sb-footer">
-      <div class="sec-title" style="color:rgba(255,255,255,.28);margin-bottom:10px">Statistik</div>
-      <div class="sb-stats">
-        <div class="sb-stat"><div class="sb-stat-n">5+</div><div class="sb-stat-l">Tutor aktif</div></div>
-        <div class="sb-stat"><div class="sb-stat-n">3</div><div class="sb-stat-l">Gate seleksi</div></div>
-        <div class="sb-stat" style="grid-column:span 2"><div class="sb-stat-n">45rb</div><div class="sb-stat-l">Mulai dari /jam</div></div>
+    <!-- LOGIN -->
+    <div class="page" id="page-login">
+      <div style="padding:28px 18px">
+        <div style="text-align:center;margin-bottom:28px">
+          <div style="font-family:var(--fdisplay);font-style:italic;font-size:32px;font-weight:800;color:var(--primary);margin-bottom:6px">tutorku</div>
+          <h2 style="font-family:var(--fdisplay);font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px">Selamat Datang</h2>
+          <p style="color:var(--sub);font-size:13px">Pilih peranmu untuk masuk ke dalam aplikasi.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="role-card" onclick="loginAs('student')">
+            <i class="ph-fill ph-student" style="font-size:40px;color:var(--primary);display:block;margin-bottom:10px"></i>
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">Masuk sebagai Siswa / Ortu</div>
+            <div style="font-size:12px;color:var(--sub)">Cari tutor, booking jadwal, dan pantau progres belajarmu.</div>
+          </div>
+          <div class="role-card" onclick="loginAs('tutor')">
+            <i class="ph-fill ph-chalkboard-teacher" style="font-size:40px;color:var(--primary);display:block;margin-bottom:10px"></i>
+            <div style="font-size:15px;font-weight:800;margin-bottom:4px">Masuk sebagai Tutor</div>
+            <div style="font-size:12px;color:var(--sub)">Kelola siswa aktif, lihat poin, dan isi laporan sesi mengajar.</div>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--light);margin-top:20px">Demo — pilih peran untuk simulasi</p>
       </div>
     </div>
+
+    <!-- AKUN -->
+    <div class="page" id="page-akun">
+      <div style="padding:18px 16px 0;position:sticky;top:0;background:rgba(248,246,240,.96);backdrop-filter:blur(8px);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><h2 id="akun-page-title">Akun Saya</h2><p id="akun-page-sub" style="font-size:11px;color:var(--sub);margin-top:1px"></p></div>
+        <button class="tb-btn" onclick="navTo('settings')"><i class="ph ph-gear" style="font-size:18px;color:var(--primary)"></i></button>
+      </div>
+      <div id="akun-content" style="padding:14px"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div style="padding:18px 16px 0;position:sticky;top:0;background:rgba(248,246,240,.96);backdrop-filter:blur(8px);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <h2>Pengaturan Akun</h2>
+      </div>
+      <div style="padding:16px">
+        <div class="sec-title">Preferensi Aplikasi</div>
+        <div style="border-radius:14px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:var(--sh0)">
+          <div class="settings-item">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-translate" style="font-size:20px;color:var(--primary)"></i><span style="font-weight:600;font-size:13px">Bahasa Aplikasi</span></div>
+            <select class="input" style="width:auto;padding:8px 30px 8px 12px;font-weight:700;border-radius:8px" onchange="setLanguage(this.value)" id="lang-select">
+              <option value="id">🇮🇩 Indonesia</option>
+              <option value="en">🇬🇧 English</option>
+            </select>
+          </div>
+          <div class="settings-item" onclick="toast('Tema gelap segera hadir! 🌙')">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-moon" style="font-size:20px;color:var(--primary)"></i><span style="font-weight:600;font-size:13px">Tema Tampilan</span></div>
+            <span style="font-size:12px;color:var(--sub);font-weight:600">Terang <i class="ph-bold ph-caret-right"></i></span>
+          </div>
+          <div class="settings-item" onclick="toggleNotif()">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-bell" style="font-size:20px;color:var(--primary)"></i><span style="font-weight:600;font-size:13px">Notifikasi</span></div>
+            <span style="font-size:11px;font-weight:700;background:var(--primary-dim);color:var(--primary);padding:3px 10px;border-radius:20px">Aktif</span>
+          </div>
+        </div>
+        <div id="settings-auth-section" style="display:none">
+          <div class="sec-title">Info Akun</div>
+          <div style="border-radius:14px;border:1px solid var(--border);margin-bottom:20px;overflow:hidden;box-shadow:var(--sh0)">
+            <div class="settings-item" onclick="navTo('akun')">
+              <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-user-circle" style="font-size:20px;color:var(--primary)"></i>
+              <div><div style="font-weight:700;font-size:13px" id="settings-name">—</div><div style="font-size:11px;color:var(--sub)" id="settings-role-label">—</div></div></div>
+              <i class="ph-bold ph-caret-right" style="color:var(--light)"></i>
+            </div>
+            <div class="settings-item" onclick="toast('Ubah password: segera hadir')">
+              <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-lock-key" style="font-size:20px;color:var(--primary)"></i><span style="font-weight:600;font-size:13px">Ubah Password</span></div>
+              <i class="ph-bold ph-caret-right" style="color:var(--light)"></i>
+            </div>
+            <div class="settings-item" onclick="toast('Privasi & Data — segera hadir')">
+              <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-shield-check" style="font-size:20px;color:var(--primary)"></i><span style="font-weight:600;font-size:13px">Privasi & Data</span></div>
+              <i class="ph-bold ph-caret-right" style="color:var(--light)"></i>
+            </div>
+          </div>
+          <button class="pill-btn danger" onclick="logout()"><i class="ph-bold ph-sign-out"></i> Keluar dari Akun</button>
+        </div>
+
+        <!-- Developer section (always visible, unlocks admin) -->
+        <div style="margin-top:28px;border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--sh0)">
+          <div class="settings-item" onclick="activateAdmin()">
+            <div style="display:flex;align-items:center;gap:10px"><i class="ph-fill ph-terminal" style="font-size:20px;color:var(--sub)"></i>
+            <div><div style="font-weight:600;font-size:13px;color:var(--sub)">Mode Developer</div><div style="font-size:11px;color:var(--light)">Akses admin panel untuk simulasi</div></div></div>
+            <i class="ph-bold ph-caret-right" style="color:var(--light)"></i>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:24px">
+          <div style="font-family:var(--fdisplay);font-style:italic;font-size:18px;color:var(--primary);font-weight:800;opacity:.4" id="version-tap" onclick="brandTap()">tutorku</div>
+          <div style="font-size:10px;color:var(--light);margin-top:3px">v4.0 · Platform Tutor Terverifikasi<br><span style="font-size:9px">Ketuk logo 5× untuk mode developer</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAFTAR -->
+    <div class="page" id="page-daftar">
+      <div style="padding:18px 16px 0;position:sticky;top:0;background:rgba(248,246,240,.96);backdrop-filter:blur(8px);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border)">
+        <h2>Daftar Jadi Tutor</h2>
+        <p style="font-size:11px;color:var(--sub);margin-top:1px">3 tahap seleksi · Mulai mengajar dalam 3–5 hari</p>
+      </div>
+      <div id="daftar-content" style="padding:14px"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div style="padding:18px 16px 0;position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <h2>Admin Panel</h2>
+        <span style="font-size:11px;background:#FEF2F2;color:var(--danger);padding:3px 10px;border-radius:20px;font-weight:700"><i class="ph-fill ph-shield-star"></i> Dev Mode</span>
+      </div>
+      <div style="padding:16px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+          <div class="card" style="text-align:center;cursor:pointer" onclick="toast('Rekrutmen: 6 pendaftar aktif')"><i class="ph-fill ph-users" style="font-size:28px;color:var(--primary);display:block;margin-bottom:8px"></i><div style="font-size:20px;font-weight:800;color:var(--primary)">6</div><div style="font-size:11px;color:var(--sub)">Pendaftar</div></div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="toast('Booking aktif: 12 sesi')"><i class="ph-fill ph-calendar-check" style="font-size:28px;color:#2563EB;display:block;margin-bottom:8px"></i><div style="font-size:20px;font-weight:800;color:#2563EB">12</div><div style="font-size:11px;color:var(--sub)">Booking Aktif</div></div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="toast('WA notif: 2 gagal terkirim')"><i class="ph-fill ph-warning-circle" style="font-size:28px;color:#D97706;display:block;margin-bottom:8px"></i><div style="font-size:20px;font-weight:800;color:#D97706">2</div><div style="font-size:11px;color:var(--sub)">WA Gagal</div></div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="toast('Total tutor aktif: 5')"><i class="ph-fill ph-chalkboard-teacher" style="font-size:28px;color:#059669;display:block;margin-bottom:8px"></i><div style="font-size:20px;font-weight:800;color:#059669">5</div><div style="font-size:11px;color:var(--sub)">Tutor Aktif</div></div>
+        </div>
+        <div class="card" style="background:var(--primary-dim);border-color:var(--primary)30">
+          <div style="font-size:12px;color:var(--primary);font-weight:600">Mode admin aktif — hanya untuk simulasi & development.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen -->
+
+  <!-- BOTTOM NAV — FIX: each icon wrapped in .nav-icon div -->
+  <nav id="bottomnav">
+    <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
+      <div class="nav-icon"><i class="ph-fill ph-house" style="font-size:22px"></i></div>
+      <span class="nav-label">Beranda</span>
+    </button>
+    <button class="nav-btn" id="nav-browse" onclick="navTo('browse')">
+      <div class="nav-icon"><i class="ph-fill ph-magnifying-glass" style="font-size:22px"></i></div>
+      <span class="nav-label">Cari</span>
+    </button>
+    <button class="nav-btn" id="nav-akun" onclick="navTo('akun')" style="display:none">
+      <div class="nav-icon"><i class="ph-fill ph-chart-pie-slice" style="font-size:22px" id="nav-akun-icon"></i></div>
+      <span class="nav-label" id="nav-akun-label">Akun</span>
+      <span class="nav-red-dot" id="nav-review-dot" style="display:none"></span>
+    </button>
+    <button class="nav-btn" id="nav-daftar" onclick="navTo('daftar')">
+      <div class="nav-icon"><i class="ph-fill ph-chalkboard-teacher" style="font-size:22px"></i></div>
+      <span class="nav-label">Daftar</span>
+    </button>
+    <button class="nav-btn" id="nav-login" onclick="navTo('login')">
+      <div class="nav-icon"><i class="ph-fill ph-user-circle" style="font-size:22px"></i></div>
+      <span class="nav-label">Masuk</span>
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="navTo('settings')" style="display:none">
+      <div class="nav-icon"><i class="ph-fill ph-gear" style="font-size:22px"></i></div>
+      <span class="nav-label">Setelan</span>
+    </button>
   </nav>
+</div>
+</div>
 
-  <!-- ══ MAIN ══════════════════════════════════════════════════════════ -->
-  <div id="main">
+<!-- NOTIFICATION PANEL -->
+<div id="notif-panel"></div>
 
-    <!-- Mobile topbar -->
-    <header id="topbar">
-      <div class="tb-brand">tutorku</div>
-      <button class="tb-btn" onclick="navTo('admin')" title="Admin Panel">⚙️</button>
-    </header>
-
-    <!-- Scrollable screen -->
-    <div id="screen">
-
-      <!-- ── HOME ────────────────────────────────────────────────── -->
-      <div class="page active" id="page-home">
-        <div class="hero">
-          <div class="hero-eye">Platform tutor mahasiswa</div>
-          <div class="hero-title">Belajar dari <em>kakak</em><br>yang sudah duluan.</div>
-          <p class="hero-sub">Tutor mahasiswa terverifikasi 3 tahap.<br>Harga terjangkau, hasil nyata.</p>
-          <button class="hero-cta" onclick="navTo('browse')">Cari tutor sekarang →</button>
-        </div>
-
-        <div class="stats-strip">
-          <div class="stat-card"><div class="stat-n">3</div><div class="stat-l">Gate seleksi</div></div>
-          <div class="stat-card"><div class="stat-n">5+</div><div class="stat-l">Tutor aktif</div></div>
-          <div class="stat-card"><div class="stat-n">45rb</div><div class="stat-l">Mulai /jam</div></div>
-        </div>
-
-        <div style="padding:20px 16px 0" class="home-section">
-          <div class="sec-title">Proses seleksi tutor</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div class="gate-card">
-              <div class="gate-icon" style="background:#EDE8FB">📋</div>
-              <div><div style="font-size:13px;font-weight:700">Gate 1 — Upload KTM</div><div style="font-size:11px;color:var(--sub);margin-top:2px">Verifikasi mahasiswa aktif</div></div>
-              <div class="gate-num" style="background:#EDE8FB;color:#7C5CDD">01</div>
-            </div>
-            <div class="gate-card">
-              <div class="gate-icon" style="background:#E8F6F3">🎙️</div>
-              <div><div style="font-size:13px;font-weight:700">Gate 2 — Interview</div><div style="font-size:11px;color:var(--sub);margin-top:2px">Kemampuan & komitmen mengajar</div></div>
-              <div class="gate-num" style="background:#E8F6F3;color:#0d6e5e">02</div>
-            </div>
-            <div class="gate-card">
-              <div class="gate-icon" style="background:#FDF0E8">📚</div>
-              <div><div style="font-size:13px;font-weight:700">Gate 3 — Bukti Mapel</div><div style="font-size:11px;color:var(--sub);margin-top:2px">Transkrip & sertifikat per mapel</div></div>
-              <div class="gate-num" style="background:#FDF0E8;color:#c05a2d">03</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="padding:20px 16px 0" class="home-section">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <div class="sec-title" style="margin-bottom:0">Tutor unggulan</div>
-            <button onclick="navTo('browse')" style="background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;color:var(--primary);font-family:var(--fbody)">Lihat semua →</button>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:10px" id="home-tutors"></div>
-        </div>
-
-        <div style="height:24px"></div>
-      </div>
-
-      <!-- ── BROWSE ──────────────────────────────────────────────── -->
-      <div class="page" id="page-browse">
-        <div style="padding:20px 16px 12px;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--border)">
-          <h2 style="margin-bottom:14px">Cari Tutor</h2>
-          <input class="input" id="search-input" placeholder="🔍  Nama, mapel, jurusan…" oninput="filterTutors()" style="margin-bottom:10px">
-          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px" id="subject-filters"></div>
-        </div>
-        <div style="padding:12px 16px 20px;display:flex;flex-direction:column;gap:10px" id="tutor-list"></div>
-      </div>
-
-      <!-- ── DAFTAR ──────────────────────────────────────────────── -->
-      <div class="page" id="page-daftar"></div>
-
-      <!-- ── ADMIN ───────────────────────────────────────────────── -->
-      <div class="page" id="page-admin">
-        <div style="padding:20px 16px 0;position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border)">
-          <h2>Admin Panel</h2>
-          <p style="font-size:12px;color:var(--sub);margin-top:2px">Kelola pendaftar, booking & notifikasi</p>
-        </div>
-        <div class="admin-tabs" id="admin-tabs">
-          <button class="admin-tab active" onclick="adminTab('rekrutmen',this)">Rekrutmen</button>
-          <button class="admin-tab" onclick="adminTab('booking',this)">Booking</button>
-          <button class="admin-tab" onclick="adminTab('wa-log',this)">Log WA</button>
-        </div>
-        <div id="admin-content"></div>
-      </div>
-
-    </div><!-- /screen -->
-
-    <!-- Bottom nav -->
-    <nav id="bottomnav">
-      <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
-        <div class="nav-icon">🏠</div>
-        <span class="nav-label">Beranda</span>
-      </button>
-      <button class="nav-btn" id="nav-browse" onclick="navTo('browse')">
-        <div class="nav-icon">🔍</div>
-        <span class="nav-label">Cari</span>
-      </button>
-      <button class="nav-btn" id="nav-daftar" onclick="navTo('daftar')">
-        <div class="nav-icon">✏️</div>
-        <span class="nav-label">Daftar</span>
-      </button>
-      <button class="nav-btn" id="nav-admin" onclick="navTo('admin')">
-        <div class="nav-icon">⚙️</div>
-        <span class="nav-label">Admin</span>
-      </button>
-    </nav>
-
-  </div><!-- /main -->
-</div><!-- /layout -->
-
-<!-- Subpage (fixed, body-level) -->
 <div id="subpage"></div>
-<!-- Toast (fixed, body-level) -->
 <div id="toast"></div>
 
 <script>
-// ── DATA ─────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let currentUser=null, currentLang='id', currentPage='home';
+let brandTapCount=0, brandTapTimer=null;
+let activeSubjFilter='', activeTierFilter='';
+let favorites=new Set();
+let notifOpen=false;
+
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
 const TUTORS=[
-  {id:'t1',name:'Ayu Maharani',uni:'Univ. Indonesia',major:'Matematika',tier:'Silver',rate:65000,rating:4.9,sessions:41,subjects:['Matematika','Fisika','Statistika'],bio:'Asisten praktikum Kalkulus. Metode problem set bertahap, cocok untuk UTBK & ujian kampus.'},
-  {id:'t2',name:'Kevin Saputra',uni:'ITB',major:'Teknik Informatika',tier:'Gold',rate:85000,rating:5.0,sessions:87,subjects:['Pemrograman','Matematika'],bio:'Finalis ICPC Regional 2023. Spesialisasi algoritma & struktur data.'},
-  {id:'t3',name:'Siti Rahayu',uni:'UGM',major:'Kimia',tier:'Bronze',rate:50000,rating:4.7,sessions:18,subjects:['Kimia','Biologi'],bio:'Sem 6, fokus Kimia Organik. Cocok untuk persiapan UN & masuk PTN.'},
-  {id:'t4',name:'Dimas Prasetyo',uni:'Undip',major:'Ekonomi',tier:'Bronze',rate:45000,rating:4.6,sessions:9,subjects:['Ekonomi','Akuntansi'],bio:'Aktif di Himpunan Ekonomi. Pengalaman bimbel privat 1 tahun.'},
-  {id:'t5',name:'Clara Natasha',uni:'Unair',major:'Sastra Inggris',tier:'Silver',rate:60000,rating:4.8,sessions:29,subjects:['Bahasa Inggris'],bio:'Juara debat nasional 2023. IELTS 7.5. Spesialisasi IELTS/TOEFL.'},
+  {id:'t1',name:'Ayu Maharani',uni:'UI',major:'Matematika',tier:'Silver',rate:65000,rating:4.9,sessions:41,subjects:['Matematika','Fisika','Statistika'],tingkat:['SMA','Kuliah'],bio:'Asisten praktikum Kalkulus. Metode problem set bertahap, cocok untuk UTBK & ujian kampus.',badges:['Top 10%','Fast Response'],available:true,respTime:'<1 jam'},
+  {id:'t2',name:'Kevin Saputra',uni:'ITB',major:'Teknik Informatika',tier:'Gold',rate:85000,rating:5.0,sessions:87,subjects:['Pemrograman','Matematika'],tingkat:['SMA','Kuliah'],bio:'Finalis ICPC Regional 2023. Spesialisasi algoritma & struktur data. Sabar dari nol.',badges:['Expert','🔥 Streak 12'],available:true,respTime:'<30 mnt'},
+  {id:'t3',name:'Siti Rahayu',uni:'UGM',major:'Kimia',tier:'Bronze',rate:50000,rating:4.7,sessions:18,subjects:['Kimia','Biologi'],tingkat:['SMP','SMA'],bio:'Sem 6, fokus Kimia Organik. Cocok untuk persiapan UTBK & masuk PTN.',badges:['Ramah Anak'],available:false,respTime:'~2 jam'},
+  {id:'t4',name:'Clara Natasha',uni:'Unair',major:'Sastra Inggris',tier:'Silver',rate:60000,rating:4.8,sessions:29,subjects:['Bahasa Inggris'],tingkat:['SMP','SMA','Kuliah'],bio:'Juara debat nasional 2023. IELTS 7.5. Spesialisasi IELTS & TOEFL preparation.',badges:['IELTS Expert'],available:true,respTime:'<1 jam'},
+  {id:'t5',name:'Dimas Prasetyo',uni:'Undip',major:'Ekonomi',tier:'Bronze',rate:45000,rating:4.6,sessions:9,subjects:['Ekonomi','Akuntansi'],tingkat:['SMA','Kuliah'],bio:'Sem 5 Ekonomi Undip. Aktif di Himpunan Mahasiswa Ekonomi. Metode belajar visual.',badges:[],available:true,respTime:'<2 jam'},
 ];
-const APPS=[
-  {id:'a1',name:'Rina Sari',uni:'Univ. Indonesia',major:'Teknik Informatika',sem:6,wa:'0812-3456-789',email:'rina@ui.ac.id',status:'pending_ktm',time:'2 jam lalu'},
-  {id:'a2',name:'Budi Santoso',uni:'ITB',major:'Matematika',sem:4,wa:'0819-8765-432',email:'budi@std.itb.ac.id',status:'pending_ktm',time:'5 jam lalu'},
-  {id:'a3',name:'Dina Ayuningrum',uni:'UGM',major:'Kimia',sem:7,wa:'0811-2233-445',email:'dina@mail.ugm.ac.id',status:'interview_scheduled',slot:'Sel 15 Apr · 09.00',time:'1 hari lalu'},
-  {id:'a4',name:'Fajar Ramadhan',uni:'Undip',major:'Fisika',sem:5,wa:'0856-7891-234',email:'fajar@students.undip.ac.id',status:'interview_passed',subjects:['Fisika','Matematika'],time:'2 hari lalu'},
-  {id:'a5',name:'Maya Putri',uni:'Unair',major:'Biologi',sem:6,wa:'0821-1223-344',email:'maya@student.unair.ac.id',status:'pending_subject_proof',subjects:['Biologi','Kimia'],time:'3 hari lalu'},
-  {id:'a6',name:'Reza Pratama',uni:'ITS',major:'Teknik Elektro',sem:5,wa:'0877-5544-3322',email:'reza@student.its.ac.id',status:'interview_scheduled',slot:'Rab 16 Apr · 11.00',time:'1 hari lalu'},
-];
-let BOOKINGS=[
-  {id:'b1',student:'Ahmad Rizki',sWa:'0813-5555-1234',tutor:'Ayu Maharani',subject:'Matematika',date:'Sab 19 Apr',time:'14.00',dur:90,amount:97500,fee:7500,status:'confirmed',held:'13 Apr 10:15'},
-  {id:'b2',student:'Lina Wati',sWa:'0856-2222-7777',tutor:'Kevin Saputra',subject:'Pemrograman',date:'Ming 20 Apr',time:'10.00',dur:120,amount:170000,fee:10000,status:'pending',held:'13 Apr 13:40'},
-  {id:'b3',student:'Eko Prasetyo',sWa:'0821-8888-5555',tutor:'Siti Rahayu',subject:'Kimia',date:'Sen 14 Apr',time:'16.00',dur:60,amount:50000,fee:5000,status:'completed',held:'10 Apr',released:'14 Apr 17:30'},
-  {id:'b4',student:'Dewi Kusuma',sWa:'0877-3333-6666',tutor:'Clara Natasha',subject:'Bahasa Inggris',date:'Sel 15 Apr',time:'15.00',dur:90,amount:90000,fee:7500,status:'confirmed',held:'12 Apr 20:00'},
-];
-const NOTIFS=[
-  {id:'n1',to:'Ahmad Rizki',wa:'0813-5555-1234',type:'BOOKING_CONFIRMED',msg:'Halo Ahmad! Sesi Matematika dengan Ayu Maharani terkonfirmasi untuk Sab 19 Apr · 14.00. Total di-hold: Rp 97.500.',ok:true,sent:'13 Apr 10:16',id_wa:'wamid.a1b2c3'},
-  {id:'n2',to:'Ayu Maharani',wa:'0812-1111-2222',type:'BOOKING_CONFIRMED',msg:'Kamu punya sesi baru dengan Ahmad Rizki untuk Matematika, Sab 19 Apr · 14.00.',ok:true,sent:'13 Apr 10:16',id_wa:'wamid.e5f6g7'},
-  {id:'n3',to:'Lina Wati',wa:'0856-2222-7777',type:'BOOKING_PENDING',msg:'Pembayaran booking Pemrograman dengan Kevin Saputra sedang di-hold. Menunggu konfirmasi tutor.',ok:true,sent:'13 Apr 13:41',id_wa:'wamid.i9j0k1'},
-  {id:'n4',to:'Rina Sari',wa:'0812-3456-789',type:'KTM_REVIEW',msg:'Pendaftaran tutormu sedang dalam review. Tim kami akan menghubungimu dalam 1×24 jam.',ok:true,sent:'13 Apr 09:15',id_wa:'wamid.m3n4o5'},
-  {id:'n5',to:'Eko Prasetyo',wa:'0821-8888-5555',type:'PAYMENT_RELEASED',msg:'Sesi Kimia dengan Siti Rahayu selesai. Pembayaran Rp 50.000 telah diteruskan ke tutor.',ok:false,sent:'14 Apr 17:31',id_wa:'wamid.u1v2w3',fail:'Nomor WA tidak aktif'},
-];
-
 const SUBJECTS=['Matematika','Fisika','Kimia','Biologi','Bahasa Inggris','Pemrograman','Ekonomi','Akuntansi','Statistika'];
-const SLOTS=[{id:'s1',day:'Sen 14 Apr',t:'10.00'},{id:'s2',day:'Sen 14 Apr',t:'14.00'},{id:'s3',day:'Sel 15 Apr',t:'09.00'},{id:'s4',day:'Sel 15 Apr',t:'13.00'},{id:'s5',day:'Rab 16 Apr',t:'11.00'},{id:'s6',day:'Rab 16 Apr',t:'15.00'},{id:'s7',day:'Kam 17 Apr',t:'10.00'},{id:'s8',day:'Jum 18 Apr',t:'09.00'}];
-const TIER_C={Gold:'#a16207',Silver:'#374151',Bronze:'#92400e'};
-const TIER_BG={Gold:'#fefce8',Silver:'#f3f4f6',Bronze:'#fffbeb'};
-const STATUS={pending_ktm:{l:'Review KTM',c:'#7C5CDD',bg:'#EDE8FB'},ktm_rejected:{l:'KTM Ditolak',c:'#b91c1c',bg:'#fef2f2'},interview_scheduled:{l:'Interview Terjadwal',c:'#92540e',bg:'#fef9ee'},interview_passed:{l:'Interview Lulus',c:'#0F3D2E',bg:'#EAF5F0'},interview_failed:{l:'Interview Gagal',c:'#b91c1c',bg:'#fef2f2'},pending_subject_proof:{l:'Review Mapel',c:'#7C5CDD',bg:'#EDE8FB'},active:{l:'Aktif ✓',c:'#0F3D2E',bg:'#EAF5F0'}};
-const BSTATUS={pending:{l:'Menunggu',c:'#92540e',bg:'#fef9ee'},confirmed:{l:'Terkonfirmasi',c:'#0F3D2E',bg:'#EAF5F0'},completed:{l:'Selesai',c:'#374151',bg:'#f3f4f6'},cancelled:{l:'Dibatalkan',c:'#b91c1c',bg:'#fef2f2'}};
 
+const TUTOR_DATA={
+  xp:4280,xpThisMonth:420,streak:12,tier:'Gold',nextTierXP:5000,
+  activeStudents:[
+    {id:'s1',name:'Ahmad Rizki',level:'SMA',subject:'Pemrograman',nextSession:'Sab, 19 Apr · 14.00',sessions:8,status:'active',color:'#2563EB'},
+    {id:'s2',name:'Lina Wati',level:'SMA',subject:'Matematika',nextSession:'Ming, 20 Apr · 10.00',sessions:3,status:'active',color:'#D97706'},
+    {id:'s3',name:'Budi Hartono',level:'Kuliah',subject:'Pemrograman',nextSession:'Sel, 22 Apr · 16.00',sessions:12,status:'active',color:'#7C3AED'},
+  ],
+  pendingReviews:[
+    {id:'r1',student:'Ahmad Rizki',subject:'Pemrograman',date:'Rab, 16 Apr',topic:'OOP & Class Inheritance',duration:90},
+    {id:'r2',student:'Budi Hartono',subject:'Pemrograman',date:'Sel, 15 Apr',topic:'Algoritma Sorting',duration:60},
+  ],
+  teachingHistory:[
+    {id:'h1',student:'Ahmad Rizki',subject:'Pemrograman',date:'Rab, 16 Apr',topic:'OOP & Class Inheritance',dur:90,xp:150,rating:5.0,reviewed:false},
+    {id:'h2',student:'Budi Hartono',subject:'Pemrograman',date:'Sel, 15 Apr',topic:'Algoritma Sorting',dur:60,xp:100,rating:5.0,reviewed:false},
+    {id:'h3',student:'Lina Wati',subject:'Matematika',date:'Sen, 14 Apr',topic:'Integral Tentu',dur:90,xp:175,rating:4.5,reviewed:true},
+    {id:'h4',student:'Ahmad Rizki',subject:'Pemrograman',date:'Kam, 10 Apr',topic:'Function & Recursion',dur:60,xp:110,rating:5.0,reviewed:true},
+    {id:'h5',student:'Budi Hartono',subject:'Pemrograman',date:'Rab, 9 Apr',topic:'Array & Linked List',dur:90,xp:145,rating:4.5,reviewed:true},
+  ],
+  xpLog:[
+    {label:'Sesi Ahmad — OOP',xp:150,bonus:'⭐ Rating Sempurna +50',date:'16 Apr'},
+    {label:'Sesi Budi — Sorting',xp:100,date:'15 Apr'},
+    {label:'Sesi Lina — Integral',xp:175,bonus:'🔥 Streak Bonus +25',date:'14 Apr'},
+    {label:'Sesi Ahmad — Function',xp:110,date:'10 Apr'},
+    {label:'Streak Bonus (10 sesi)',xp:200,bonus:'🏆 Bonus Milestone',date:'9 Apr'},
+  ]
+};
+
+const STUDENT_DATA={
+  activeTutor:TUTORS[0],sessions:8,hoursTotal:12,
+  upcomingSessions:[{id:'u1',tutor:'Ayu Maharani',subject:'Matematika',date:'Sab, 19 Apr',time:'14.00',duration:90}],
+  progressLogs:[
+    {id:'l1',tutor:'Ayu Maharani',subject:'Matematika',date:'14 Apr',topic:'Integral Tentu',mastery:4,notes:'Sudah memahami konsep dasar integral. Perlu latihan soal cerita lebih banyak.',homework:'Kerjakan latihan 5.1–5.3 halaman 120'},
+    {id:'l2',tutor:'Ayu Maharani',subject:'Matematika',date:'10 Apr',topic:'Limit & Turunan',mastery:5,notes:'Penguasaan konsep limit sangat baik. Turunan rantai sudah dikuasai.',homework:'Review materi bab 4'},
+    {id:'l3',tutor:'Ayu Maharani',subject:'Fisika',date:'7 Apr',topic:'Gerak Melingkar',mastery:3,notes:'Perlu lebih banyak latihan soal. Konsep sudah benar tapi perlu ketelitian.',homework:'Latihan soal no. 1–10 bab 3'},
+  ]
+};
+
+let NOTIFICATIONS=[
+  {id:'n1',type:'booking',icon:'ph-fill ph-calendar-check',title:'Booking dikonfirmasi',body:'Sesi Matematika dengan Ayu Maharani — Sab 19 Apr, 14.00',time:'2 jam lalu',unread:true},
+  {id:'n2',type:'review',icon:'ph-fill ph-clipboard-text',title:'Laporan baru dari tutor',body:'Ayu Maharani mengisi laporan sesi 14 Apr. Lihat progres belajarmu.',time:'1 hari lalu',unread:true},
+  {id:'n3',type:'reminder',icon:'ph-fill ph-clock',title:'Pengingat sesi besok',body:'Jangan lupa sesi Matematika besok jam 14.00 bersama Ayu.',time:'2 hari lalu',unread:false},
+  {id:'n4',type:'promo',icon:'ph-fill ph-star',title:'Tutor baru tersedia',body:'5 tutor Kimia baru bergabung. Cek profil mereka!',time:'3 hari lalu',unread:false},
+];
+
+const TIME_SLOTS=['08.00','09.00','10.00','11.00','13.00','14.00','15.00','16.00','19.00','20.00'];
+let _bookTutor=null,_bookDate='',_bookTime='',_bookDur=60,_reviewMastery=0;
+
+// ══════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════
+function getSubjectTheme(s){
+  const sl=s.toLowerCase();
+  if(sl.includes('matematika')||sl.includes('statistika'))return{c:'#2563EB',bg:'#EFF6FF',icon:'ph-function',gradient:'linear-gradient(135deg,#1D4ED8,#3B82F6)',emoji:'📐'};
+  if(sl.includes('fisika')||sl.includes('kimia')||sl.includes('biologi'))return{c:'#059669',bg:'#ECFDF5',icon:'ph-atom',gradient:'linear-gradient(135deg,#047857,#10B981)',emoji:'🔬'};
+  if(sl.includes('inggris')||sl.includes('bahasa'))return{c:'#D97706',bg:'#FFFBEB',icon:'ph-translate',gradient:'linear-gradient(135deg,#B45309,#F59E0B)',emoji:'🌍'};
+  if(sl.includes('pemrograman')||sl.includes('coding'))return{c:'#7C3AED',bg:'#F5F3FF',icon:'ph-code',gradient:'linear-gradient(135deg,#6D28D9,#8B5CF6)',emoji:'💻'};
+  if(sl.includes('ekonomi')||sl.includes('akuntansi'))return{c:'#0369A1',bg:'#F0F9FF',icon:'ph-trend-up',gradient:'linear-gradient(135deg,#075985,#0EA5E9)',emoji:'📊'};
+  return{c:'var(--primary)',bg:'var(--primary-dim)',icon:'ph-student',gradient:'linear-gradient(135deg,#0F3D2E,#1a5c42)',emoji:'📚'};
+}
 const fmt=n=>'Rp '+parseInt(n).toLocaleString('id-ID');
-const avatarColors=['#0F3D2E','#5c3dc9','#0d6e5e','#c05a2d','#92400e','#374151','#7c3aed','#b45309'];
+const AC=['#0F3D2E','#5c3dc9','#0d6e5e','#c05a2d','#92400e','#374151','#7c3aed','#b45309','#0369A1'];
 function av(name,size=36){
-  const c=avatarColors[name.charCodeAt(0)%avatarColors.length];
+  const c=AC[name.charCodeAt(0)%AC.length];
   const ini=name.split(' ').slice(0,2).map(w=>w[0]).join('');
   return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size*.36)}px;background:${c}">${ini}</div>`;
 }
-function stars(r){return `<span style="color:#F59E0B;font-size:12px;font-weight:700">${'★'.repeat(Math.floor(r))}<span style="color:#ccc"> ${r.toFixed(1)}</span></span>`;}
-function pill(s,book=false){
-  const m=book?BSTATUS[s]:STATUS[s];if(!m)return'';
-  return `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:${m.bg};color:${m.c};font-size:11px;font-weight:700"><span style="width:5px;height:5px;border-radius:50%;background:${m.c};display:inline-block"></span>${m.l}</span>`;
+function stars(r){return `<span style="color:#F59E0B;font-size:12px;font-weight:700"><i class="ph-fill ph-star"></i> ${r.toFixed(1)}</span>`;}
+function tierBadge(t,large=false){
+  const map={Gold:{c:'var(--gold)',bg:'var(--gold-bg)',border:'#FDE68A',icon:'ph-crown'},Silver:{c:'var(--silver)',bg:'var(--silver-bg)',border:'#D1D5DB',icon:'ph-medal'},Bronze:{c:'var(--bronze)',bg:'var(--bronze-bg)',border:'#FCD34D',icon:'ph-medal'}};
+  const m=map[t]||map.Bronze;
+  if(large)return`<span class="tier-badge-lg ${t}"><i class="ph-fill ${m.icon}"></i> ${t}</span>`;
+  return`<span style="padding:2px 9px;border-radius:20px;background:${m.bg};color:${m.c};font-size:11px;font-weight:700;border:1px solid ${m.border}"><i class="ph-fill ${m.icon}"></i> ${t}</span>`;
 }
-function tierBadge(t){return `<span style="padding:2px 10px;border-radius:20px;background:${TIER_BG[t]};color:${TIER_C[t]};font-size:11px;font-weight:700;border:1px solid ${TIER_C[t]}30">${t}</span>`;}
+function masteryBar(n){
+  const colors=['','#EF4444','#F97316','#EAB308','#22C55E','#059669'];
+  const labels=['','Perlu Banyak Latihan','Butuh Review','Cukup Paham','Baik','Sangat Menguasai'];
+  return `<div style="display:flex;align-items:center;gap:8px">
+    ${[1,2,3,4,5].map(i=>`<div style="flex:1;height:6px;border-radius:3px;background:${i<=n?colors[n]:'var(--border)'}"></div>`).join('')}
+    <span style="font-size:10px;font-weight:700;color:${colors[n]||'var(--sub)'};white-space:nowrap">${labels[n]||'—'}</span>
+  </div>`;
+}
+function masteryStars(n){let s='';for(let i=1;i<=5;i++)s+=`<i class="ph-fill ph-star" style="color:${i<=n?'#F59E0B':'#E5E0D5'};font-size:13px"></i>`;return s;}
+function xpTier(xp){if(xp>=5000)return'Gold';if(xp>=1000)return'Silver';return'Bronze';}
+function xpNextLabel(xp){if(xp>=5000)return'Gold (Tertinggi)';if(xp>=1000)return`Gold (${(5000-xp).toLocaleString('id-ID')} XP lagi)`;return`Silver (${(1000-xp).toLocaleString('id-ID')} XP lagi)`;}
+function xpTarget(xp){if(xp>=5000)return 5000;if(xp>=1000)return 5000;return 1000;}
+function xpFloor(xp){if(xp>=5000)return 5000;if(xp>=1000)return 1000;return 0;}
+let toastT;
+function toast(msg){const el=document.getElementById('toast');el.innerHTML=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),3200);}
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
-let currentPage='home';
+// ══════════════════════════════════════════════════════════════════
+// ADMIN ACCESS — two ways: Settings button OR 5-tap logo
+// ══════════════════════════════════════════════════════════════════
+function activateAdmin(){
+  document.getElementById('snav-admin').style.display='flex';
+  navTo('admin');
+  toast('🔐 Mode developer aktif — Admin Panel terbuka');
+}
+function brandTap(){
+  brandTapCount++;clearTimeout(brandTapTimer);
+  brandTapTimer=setTimeout(()=>brandTapCount=0,2000);
+  if(brandTapCount>=5){brandTapCount=0;activateAdmin();}
+}
+
+// ══════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════════════════════════════
+function toggleNotif(){
+  notifOpen=!notifOpen;
+  const panel=document.getElementById('notif-panel');
+  if(notifOpen){
+    renderNotifPanel();panel.classList.add('open');
+    NOTIFICATIONS.forEach(n=>n.unread=false);
+    document.getElementById('notif-dot').style.display='none';
+  } else {panel.classList.remove('open');}
+}
+function renderNotifPanel(){
+  const panel=document.getElementById('notif-panel');
+  panel.innerHTML=`
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:14px;font-weight:800">Notifikasi</div>
+      <button onclick="toggleNotif()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--sub)"><i class="ph-bold ph-x"></i></button>
+    </div>
+    ${NOTIFICATIONS.map(n=>`
+      <div class="notif-item ${n.unread?'unread':''}">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--primary-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="${n.icon}" style="font-size:16px;color:var(--primary)"></i></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:700;margin-bottom:2px">${n.title}</div>
+            <div style="font-size:11px;color:var(--sub);line-height:1.4">${n.body}</div>
+            <div style="font-size:10px;color:var(--light);margin-top:4px">${n.time}</div>
+          </div>
+          ${n.unread?`<div style="width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:4px"></div>`:''}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════════
+function loginAs(role){
+  currentUser={role,name:role==='tutor'?'Kevin Saputra':'Dinda Rahayu'};
+  updateUIForRole();navTo('home');
+  toast(role==='tutor'?'Selamat datang, Kak Kevin! 👋':'Selamat datang, Dinda! 👋');
+  NOTIFICATIONS.some(n=>n.unread)&&(document.getElementById('notif-dot').style.display='block');
+}
+function logout(){currentUser=null;updateUIForRole();navTo('home');toast('Berhasil keluar.');}
+
+function updateUIForRole(){
+  const G=!currentUser,S=currentUser?.role==='student',T=currentUser?.role==='tutor';
+  const sbP=document.getElementById('sb-profile');
+  sbP.style.display=G?'none':'flex';
+  if(!G){
+    document.getElementById('sb-username').textContent=currentUser.name;
+    document.getElementById('sb-role').textContent=S?'Member Siswa':'Tutor Aktif';
+    document.getElementById('sb-avatar').textContent=currentUser.name.charAt(0);
+    document.getElementById('sb-avatar').style.background=T?'var(--accent)':'#5c3dc9';
+  }
+  const si=(id,show)=>{const el=document.getElementById(id);if(el)el.style.display=show?'flex':'none';};
+  si('snav-login',G);si('snav-settings',!G);si('snav-logout',!G);si('snav-daftar',G);
+  si('snav-akun-tutor',T);si('snav-akun-student',S);
+  const nb=(id,show)=>{const el=document.getElementById(id);if(el)el.style.display=show?'flex':'none';};
+  nb('nav-login',G);nb('nav-settings',!G);nb('nav-daftar',G);nb('nav-akun',!G);
+  const ni=document.getElementById('nav-akun-icon'),nl=document.getElementById('nav-akun-label');
+  if(T&&ni&&nl){ni.className='ph-fill ph-chart-pie-slice';nl.textContent='Dasbor';}
+  if(S&&ni&&nl){ni.className='ph-fill ph-chart-line-up';nl.textContent='Progres';}
+  document.getElementById('tb-akun-btn').style.display=!G?'flex':'none';
+  document.getElementById('settings-auth-section').style.display=G?'none':'block';
+  if(!G){document.getElementById('settings-name').textContent=currentUser.name;document.getElementById('settings-role-label').textContent=S?'Akun Siswa':'Tutor Aktif';}
+  const tutorBanner=document.getElementById('home-tutor-banner');
+  const promoSection=document.getElementById('home-promo-section');
+  if(T){tutorBanner.style.display='block';promoSection.style.display='none';
+    document.getElementById('tutor-banner-xp').innerHTML=`<i class="ph-fill ph-star"></i> ${TUTOR_DATA.xp.toLocaleString()} XP · ${tierBadge(TUTOR_DATA.tier)} · ${TUTOR_DATA.pendingReviews.length} review pending`;
+  } else {tutorBanner.style.display='none';promoSection.style.display='block';}
+  const badgeEl=document.getElementById('sb-badge-review');
+  if(badgeEl)badgeEl.style.display=(T&&TUTOR_DATA.pendingReviews.length>0)?'inline':'none';
+  const dot=document.getElementById('nav-review-dot');
+  if(dot)dot.style.display=(T&&TUTOR_DATA.pendingReviews.length>0)?'block':'none';
+  if(NOTIFICATIONS.some(n=>n.unread)&&!G)document.getElementById('notif-dot').style.display='block';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════
 function navTo(p){
+  if(notifOpen)toggleNotif();
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
-
-  const pg=document.getElementById('page-'+p);
-  if(pg)pg.classList.add('active');
-  const nb=document.getElementById('nav-'+p);
-  if(nb)nb.classList.add('active');
-  const sn=document.getElementById('snav-'+p);
-  if(sn)sn.classList.add('active');
-
+  document.querySelectorAll('.nav-btn,.sb-item').forEach(el=>el.classList.remove('active'));
+  const pg=document.getElementById('page-'+p);if(pg)pg.classList.add('active');
+  const nb=document.getElementById('nav-'+p);if(nb)nb.classList.add('active');
+  ['snav-'+p,'snav-akun-tutor','snav-akun-student'].forEach(id=>{const el=document.getElementById(id);if(el&&id==='snav-'+p)el.classList.add('active');});
+  if(p==='akun'&&currentUser){const sn=document.getElementById(currentUser.role==='tutor'?'snav-akun-tutor':'snav-akun-student');if(sn)sn.classList.add('active');}
   closeSubpage();
   if(p==='browse')renderBrowse();
+  if(p==='akun')renderAkun();
   if(p==='daftar')renderDaftar();
-  if(p==='admin'){renderAdmin();setTimeout(()=>adminTab('rekrutmen',document.querySelector('.admin-tab')),10);}
   document.getElementById('screen').scrollTop=0;
   currentPage=p;
 }
+function openSubpage(html){const sp=document.getElementById('subpage');sp.innerHTML=html;sp.classList.add('active');}
+function closeSubpage(){const sp=document.getElementById('subpage');sp.classList.remove('active');sp.innerHTML='';}
+function setLanguage(lang){currentLang=lang;toast(lang==='en'?'Language: English 🇬🇧':'Bahasa: Indonesia 🇮🇩');}
 
-function openSubpage(html){
-  const sp=document.getElementById('subpage');
-  sp.innerHTML=html;sp.classList.add('active');
-}
-function closeSubpage(){
-  const sp=document.getElementById('subpage');
-  sp.classList.remove('active');sp.innerHTML='';
-}
-
-// Toast
-let toastTimer;
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+// ══════════════════════════════════════════════════════════════════
+// FAVORITES
+// ══════════════════════════════════════════════════════════════════
+function toggleFav(id,e){
+  e.stopPropagation();
+  if(favorites.has(id)){favorites.delete(id);toast('Dihapus dari favorit');}
+  else{favorites.add(id);toast('✓ Disimpan ke favorit ❤️');}
+  const btn=document.getElementById('fav-'+id);
+  if(btn){btn.classList.toggle('active',favorites.has(id));btn.innerHTML=favorites.has(id)?'❤️':'🤍';}
 }
 
-// ── HOME ──────────────────────────────────────────────────────────────────────
-function renderHome(){
-  document.getElementById('home-tutors').innerHTML=TUTORS.slice(0,3).map(t=>`
-    <div class="tutor-card" onclick="openTutorDetail('${t.id}')">
-      <div style="display:flex;gap:12px;align-items:center">
-        ${av(t.name,40)}
-        <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:700">${t.name}</div>
-          <div style="font-size:11px;color:var(--sub)">${t.major} · ${t.uni}</div>
-          <div style="display:flex;gap:6px;align-items:center;margin-top:4px">${tierBadge(t.tier)} ${stars(t.rating)}</div>
+// ══════════════════════════════════════════════════════════════════
+// ENHANCED TUTOR CARD
+// ══════════════════════════════════════════════════════════════════
+function createTutorCardHTML(t){
+  const th=getSubjectTheme(t.subjects[0]);
+  const isFav=favorites.has(t.id);
+  const badges=(t.badges||[]).map(b=>`<span class="achieve-badge"><i class="ph-fill ph-seal-check"></i> ${b}</span>`).join('');
+  const allSubjChips=t.subjects.map(s=>{const st=getSubjectTheme(s);return`<span style="background:${st.bg};color:${st.c};border:1px solid ${st.c}20;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700">${s}</span>`;}).join('');
+  const tingkatChips=t.tingkat.map(l=>`<span class="tag" style="font-size:10px">${l}</span>`).join('');
+
+  return `<div class="tutor-card" onclick="openTutorDetail('${t.id}')">
+    <!-- BANNER — subject-themed gradient with decorative elements -->
+    <div class="tutor-card-banner" style="background:${th.gradient}">
+      <div class="tutor-card-banner-pattern"></div>
+      <div class="tutor-card-banner-icon">${th.emoji}</div>
+      <!-- Tier badge on banner -->
+      <div style="position:relative;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${tierBadge(t.tier)}
+          <span class="${t.available?'avail-on':'avail-off'} avail-badge">
+            <i class="ph-fill ${t.available?'ph-circle':'ph-circle-dashed'}"></i>
+            ${t.available?'Tersedia':'Tidak Tersedia'}
+          </span>
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:14px;font-weight:800;color:var(--primary)">${fmt(t.rate)}</div>
-          <div style="font-size:10px;color:var(--light)">/jam</div>
-        </div>
+        <button id="fav-${t.id}" class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${t.id}',event)">${isFav?'❤️':'🤍'}</button>
       </div>
     </div>
-  `).join('');
-}
-
-// ── BROWSE ────────────────────────────────────────────────────────────────────
-let activeSubjFilter='';
-function renderBrowse(){
-  const filters=['Semua',...SUBJECTS];
-  document.getElementById('subject-filters').innerHTML=filters.map(s=>`
-    <button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${s===activeSubjFilter||(!activeSubjFilter&&s==='Semua')?'var(--primary)':'var(--border)'};background:${s===activeSubjFilter||(!activeSubjFilter&&s==='Semua')?'var(--primary-dim)':'var(--card)'};color:${s===activeSubjFilter||(!activeSubjFilter&&s==='Semua')?'var(--primary)':'var(--sub)'};border-radius:20px;padding:7px 14px;font-size:12px;font-weight:${s===activeSubjFilter||(!activeSubjFilter&&s==='Semua')?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fbody);transition:all .15s">${s}</button>
-  `).join('');
-  filterTutors();
-}
-function setSubjFilter(s){activeSubjFilter=s==='Semua'?'':s;renderBrowse();}
-function filterTutors(){
-  const q=(document.getElementById('search-input')?.value||'').toLowerCase();
-  const list=TUTORS.filter(t=>{
-    const mq=!q||t.name.toLowerCase().includes(q)||t.subjects.some(s=>s.toLowerCase().includes(q))||t.major.toLowerCase().includes(q);
-    const ms=!activeSubjFilter||t.subjects.includes(activeSubjFilter);
-    return mq&&ms;
-  });
-  document.getElementById('tutor-list').innerHTML=list.length?list.map(t=>`
-    <div class="tutor-card" onclick="openTutorDetail('${t.id}')">
-      <div style="display:flex;gap:12px;align-items:flex-start">
+    <!-- BODY -->
+    <div class="tutor-card-body">
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">
         ${av(t.name,44)}
         <div style="flex:1;min-width:0">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div>
-              <div style="font-size:15px;font-weight:700">${t.name}</div>
-              <div style="font-size:12px;color:var(--sub)">${t.major} · ${t.uni}</div>
+              <div style="font-size:15px;font-weight:800">${t.name} <i class="ph-fill ph-check-circle" style="color:#059669;font-size:13px"></i></div>
+              <div style="font-size:11px;color:var(--sub)">${t.major} · ${t.uni}</div>
             </div>
-            <div style="text-align:right;flex-shrink:0;margin-left:8px">
-              <div style="font-size:15px;font-weight:800;color:var(--primary)">${fmt(t.rate)}</div>
-              <div style="font-size:10px;color:var(--light)">/jam</div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px;background:var(--bg);padding:5px 9px;border-radius:9px">
+              <div style="font-size:14px;font-weight:800;color:var(--primary)">${fmt(t.rate)}</div>
+              <div style="font-size:9px;color:var(--light)">/jam</div>
             </div>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;margin:6px 0">${tierBadge(t.tier)} ${stars(t.rating)} <span style="font-size:11px;color:var(--light)">${t.sessions} sesi</span></div>
-          <p style="font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:10px">${t.bio}</p>
-          <div style="display:flex;flex-wrap:wrap;gap:5px">${t.subjects.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+          <div style="display:flex;gap:6px;align-items:center;margin:5px 0;flex-wrap:wrap">
+            ${stars(t.rating)} <span style="font-size:11px;color:var(--light)"><i class="ph ph-chalkboard"></i> ${t.sessions} sesi</span>
+            <span style="font-size:10px;color:var(--light)"><i class="ph ph-chat-circle-text"></i> Balas ${t.respTime}</span>
+          </div>
         </div>
       </div>
+      <!-- Subjects chips -->
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${allSubjChips}</div>
+      <!-- Level + badges -->
+      <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+        ${tingkatChips}
+        ${badges?`<span style="width:1px;height:12px;background:var(--border);display:inline-block"></span>${badges}`:''}
+      </div>
     </div>
-  `).join(''):`<div style="text-align:center;padding:48px 20px;color:var(--light);font-size:14px">Tidak ada tutor yang cocok.</div>`;
+  </div>`;
 }
 
-// Tutor detail
+function renderHome(){document.getElementById('home-tutors').innerHTML=TUTORS.slice(0,3).map(createTutorCardHTML).join('');}
+
+function renderBrowse(){
+  const fs=['Semua',...SUBJECTS];
+  document.getElementById('subject-filters').innerHTML=fs.map(s=>`<button class="filter-chip ${s===activeSubjFilter||(!activeSubjFilter&&s==='Semua')?'active':''}" onclick="setSubjFilter('${s}')">${s}</button>`).join('');
+  filterTutors();
+}
+function setSubjFilter(s){activeSubjFilter=s==='Semua'?'':s;renderBrowse();}
+function setTierFilter(t,el){
+  activeTierFilter=t;
+  document.querySelectorAll('#tier-filters .filter-chip').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');filterTutors();
+}
+function filterTutors(){
+  const q=(document.getElementById('search-input')?.value||'').toLowerCase();
+  const list=TUTORS.filter(t=>
+    (!q||t.name.toLowerCase().includes(q)||t.subjects.some(s=>s.toLowerCase().includes(q))||t.major.toLowerCase().includes(q))&&
+    (!activeSubjFilter||t.subjects.includes(activeSubjFilter))&&
+    (!activeTierFilter||t.tier===activeTierFilter)
+  );
+  document.getElementById('tutor-list').innerHTML=list.length?list.map(createTutorCardHTML).join(''):`<div style="text-align:center;padding:48px 20px;color:var(--light)"><i class="ph-fill ph-magnifying-glass" style="font-size:40px;display:block;margin-bottom:10px"></i>Tidak ada tutor yang cocok.</div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TUTOR DETAIL + BOOKING
+// ══════════════════════════════════════════════════════════════════
 function openTutorDetail(id){
   const t=TUTORS.find(x=>x.id===id);if(!t)return;
-  let selSlot='',selSubj='',selDur=60,bookStep=0;
+  const th=getSubjectTheme(t.subjects[0]);
+  const isFav=favorites.has(t.id);
   openSubpage(`
     <div class="page-header">
-      <button class="back-btn" onclick="closeSubpage()">←</button>
-      <div><div style="font-size:15px;font-weight:700">${t.name}</div><div style="font-size:11px;color:var(--sub)">${t.major}</div></div>
+      <button class="back-btn" onclick="closeSubpage()"><i class="ph ph-arrow-left"></i></button>
+      <div style="flex:1"><div style="font-size:15px;font-weight:700">${t.name}</div><div style="font-size:11px;color:var(--sub)">Profil Tutor</div></div>
+      <button id="fav-detail-${t.id}" class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${t.id}',event);this.innerHTML=favorites.has('${t.id}')?'❤️':'🤍'" style="width:36px;height:36px;border-radius:10px">${isFav?'❤️':'🤍'}</button>
     </div>
-    <div style="padding:0 16px 24px">
+    <!-- Subject banner -->
+    <div style="height:80px;background:${th.gradient};position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:0 20px 14px">
+      <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:12px 12px"></div>
+      <div style="position:absolute;right:-10px;top:-10px;font-size:90px;opacity:.1;line-height:1">${th.emoji}</div>
+      <div style="position:relative;z-index:1;display:flex;gap:8px;align-items:center">
+        ${tierBadge(t.tier)}
+        <span class="${t.available?'avail-on':'avail-off'} avail-badge"><i class="ph-fill ${t.available?'ph-circle':'ph-circle-dashed'}"></i> ${t.available?'Tersedia':'Tidak Tersedia'}</span>
+      </div>
+    </div>
+    <div style="padding:16px 16px 0;margin-top:-28px;position:relative;z-index:2">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="display:inline-block;border:4px solid var(--card);border-radius:50%;box-shadow:var(--sh1);margin-bottom:10px">${av(t.name,72)}</div>
+        <h2 style="margin-bottom:2px">${t.name} <i class="ph-fill ph-check-circle" style="color:#059669;font-size:16px"></i></h2>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:8px">${t.major} · ${t.uni}</div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap">
+          ${stars(t.rating)} <span style="font-size:11px;color:var(--light)"><i class="ph ph-chalkboard"></i> ${t.sessions} sesi</span>
+          <span style="font-size:11px;color:var(--light)"><i class="ph ph-chat-circle-text"></i> ${t.respTime}</span>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Tentang</div>
+        <p style="font-size:13px;color:var(--sub);line-height:1.6">${t.bio}</p>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Mata Pelajaran</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">${t.subjects.map(s=>{const st=getSubjectTheme(s);return`<span style="background:${st.bg};color:${st.c};border:1px solid ${st.c}20;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700"><i class="ph-fill ${st.icon}"></i> ${s}</span>`}).join('')}</div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Jenjang</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${t.tingkat.map(l=>`<span class="tag">${l}</span>`).join('')}</div>
+      </div>
+      <div style="background:var(--primary-dim);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:11px;color:var(--sub);font-weight:600;margin-bottom:2px">Tarif per jam</div><div style="font-size:26px;font-weight:800;color:var(--primary)">${fmt(t.rate)}</div></div>
+        <div style="font-size:11px;color:var(--sub);text-align:right">+7% service fee<br>Bayar via hold system</div>
+      </div>
+      <button class="pill-btn primary" onclick="${currentUser?`openBookingModal('${t.id}')`:`navTo('login')`}" style="margin-bottom:16px">
+        <i class="ph-bold ph-calendar-plus"></i> ${currentUser?'Booking Sesi Sekarang':'Login untuk Booking'}
+      </button>
+    </div>
+  `);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// BOOKING MODAL
+// ══════════════════════════════════════════════════════════════════
+function openBookingModal(tid){
+  _bookTutor=TUTORS.find(x=>x.id===tid);
+  _bookDate='';_bookTime='';_bookDur=60;
+  renderBookingStep(1);
+}
+function renderBookingStep(step){
+  if(!_bookTutor)return;
+  const t=_bookTutor;
+  const DATES=['Sen, 21 Apr','Sel, 22 Apr','Rab, 23 Apr','Kam, 24 Apr','Jum, 25 Apr','Sab, 26 Apr'];
+  const DURS=[60,90,120];
+  const amt=Math.round(t.rate*(_bookDur/60));
+  const fee=Math.round(amt*.07);
+
+  let content='';
+  if(step===1){
+    content=`
+      <div class="field" style="margin-bottom:14px">
+        <label>Pilih Mata Pelajaran</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">${t.subjects.map(s=>{const st=getSubjectTheme(s);return`<div onclick="this.parentElement.querySelectorAll('div').forEach(d=>d.style.fontWeight=400);this.style.fontWeight=700;document.getElementById('bk-subj').value='${s}'" style="border:1.5px solid ${st.c}30;background:${st.bg};border-radius:10px;padding:9px 14px;cursor:pointer;font-size:13px;color:${st.c};font-weight:400;transition:all .15s">${s}</div>`}).join('')}</div>
+        <input type="hidden" id="bk-subj" value="${t.subjects[0]}">
+      </div>
+      <div class="field" style="margin-bottom:14px">
+        <label>Pilih Tanggal</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${DATES.map(d=>`<div onclick="selectDate('${d}',this)" style="border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;cursor:pointer;font-size:13px;transition:all .15s;display:flex;justify-content:space-between;align-items:center;background:var(--card)">${d}<span style="font-size:11px;color:var(--light)">Tersedia</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:14px">
+        <label>Pilih Jam Mulai</label>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+          ${TIME_SLOTS.map(tm=>`<div class="slot-item" onclick="selectTime('${tm}',this)"><div class="slot-time" style="font-family:var(--fmono);font-size:13px;font-weight:500;color:var(--text)">${tm}</div></div>`).join('')}
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:20px">
+        <label>Durasi</label>
+        <div style="display:flex;gap:8px">
+          ${DURS.map(d=>`<div onclick="selectDur(${d},this)" style="flex:1;border:1.5px solid ${d===_bookDur?'var(--primary)':'var(--border)'};background:${d===_bookDur?'var(--primary-dim)':'var(--card)'};border-radius:10px;padding:11px 6px;cursor:pointer;text-align:center"><div style="font-size:13px;font-weight:700;color:${d===_bookDur?'var(--primary)':'var(--text)'}">${d} mnt</div><div style="font-size:11px;color:${d===_bookDur?'var(--primary)':'var(--light)'};">${fmt(Math.round(t.rate*(d/60)))}</div></div>`).join('')}
+        </div>
+      </div>
+      <button class="pill-btn primary" onclick="if(!_bookDate||!_bookTime){toast('Pilih tanggal dan jam terlebih dahulu');}else{renderBookingStep(2)}"><i class="ph-bold ph-arrow-right"></i> Lanjut — Konfirmasi</button>`;
+  } else if(step===2){
+    content=`
       <div class="card" style="margin-bottom:14px">
-        <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">
-          ${av(t.name,56)}
-          <div>
-            <div style="font-size:17px;font-weight:800">${t.name}</div>
-            <div style="font-size:12px;color:var(--sub);margin:2px 0">${t.major} · ${t.uni}</div>
-            <div style="display:flex;gap:7px;align-items:center;margin-top:6px">${tierBadge(t.tier)} ${stars(t.rating)} <span style="font-size:11px;color:var(--light)">${t.sessions} sesi</span></div>
+        <div class="sec-title">Ringkasan Booking</div>
+        ${[{l:'Tutor',v:t.name},{l:'Jadwal',v:`${_bookDate} · ${_bookTime}`},{l:'Durasi',v:`${_bookDur} menit`},{l:'Biaya tutor',v:fmt(amt)},{l:'Service fee (7%)',v:fmt(fee)}].map(r=>`<div class="sum-row"><span style="font-size:13px;color:var(--sub)">${r.l}</span><span style="font-size:13px;font-weight:700">${r.v}</span></div>`).join('')}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1.5px solid var(--border);margin-top:4px">
+          <span style="font-size:14px;font-weight:800">Total Hold</span>
+          <span style="font-size:20px;font-weight:800;color:var(--primary)">${fmt(amt+fee)}</span>
+        </div>
+      </div>
+      <div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:13px 14px;margin-bottom:16px;font-size:12px;color:#92400E;line-height:1.6">
+        <i class="ph-fill ph-lock" style="margin-right:4px"></i><strong>Sistem Hold:</strong> Dana dipegang dulu. Dicairkan ke tutor setelah sesi selesai. Jika tutor tidak hadir, 100% kembali ke kamu.
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="pill-btn ghost" onclick="renderBookingStep(1)" style="flex:0 0 auto;width:auto;padding:12px 16px"><i class="ph-bold ph-arrow-left"></i></button>
+        <button class="pill-btn primary" onclick="confirmBooking()"><i class="ph-bold ph-check"></i> Konfirmasi & Hold Pembayaran</button>
+      </div>`;
+  } else if(step===3){
+    content=`
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:56px;margin-bottom:12px">✅</div>
+        <h3 style="font-family:var(--fdisplay);font-size:22px;font-weight:800;margin-bottom:8px">Booking Berhasil!</h3>
+        <p style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:20px">Pembayaran <strong>${fmt(amt+fee)}</strong> sedang di-hold. Konfirmasi dikirim via WhatsApp dalam beberapa menit.</p>
+        <button class="pill-btn primary" onclick="closeModal();closeSubpage()">Selesai</button>
+      </div>`;
+  }
+
+  const modalHTML=`
+    <div class="modal-overlay" id="booking-modal" onclick="if(event.target.id==='booking-modal')closeModal()">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div style="padding:0 20px;max-height:70vh;overflow-y:auto">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+            ${av(t.name,40)}
+            <div><div style="font-size:15px;font-weight:800">${t.name}</div><div style="font-size:12px;color:var(--sub)">${step===1?'Pilih Jadwal':step===2?'Konfirmasi':'Booking Berhasil'}</div></div>
+            <div style="margin-left:auto;display:flex;gap:5px">${[1,2,3].map(i=>`<div style="width:6px;height:6px;border-radius:50%;background:${i<=step?'var(--primary)':'var(--border)'}"></div>`).join('')}</div>
+          </div>
+          ${content}
+          <div style="height:20px"></div>
+        </div>
+      </div>
+    </div>`;
+
+  const existing=document.getElementById('booking-modal');
+  if(existing)existing.remove();
+  document.body.insertAdjacentHTML('beforeend',modalHTML);
+}
+function selectDate(d,el){_bookDate=d;el.parentElement.querySelectorAll('div').forEach(x=>{x.style.borderColor='var(--border)';x.style.background='var(--card)';x.style.fontWeight=400;});el.style.borderColor='var(--primary)';el.style.background='var(--primary-dim)';el.style.fontWeight=700;}
+function selectTime(tm,el){_bookTime=tm;el.parentElement.querySelectorAll('.slot-item').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function selectDur(d,el){_bookDur=d;el.parentElement.querySelectorAll('div').forEach(x=>{x.style.borderColor='var(--border)';x.style.background='var(--card)';x.querySelector('div').style.color='var(--text)'});el.style.borderColor='var(--primary)';el.style.background='var(--primary-dim)';}
+function closeModal(){const m=document.getElementById('booking-modal');if(m)m.remove();}
+function confirmBooking(){renderBookingStep(3);}
+
+// ══════════════════════════════════════════════════════════════════
+// AKUN PAGE (smart: tutor / student)
+// ══════════════════════════════════════════════════════════════════
+function renderAkun(){
+  if(!currentUser){navTo('login');return;}
+  if(currentUser.role==='tutor')renderAkunTutor();
+  else renderAkunStudent();
+}
+
+function renderAkunTutor(){
+  document.getElementById('akun-page-title').textContent='Dasbor Tutor';
+  document.getElementById('akun-page-sub').textContent=`Halo, ${currentUser.name.split(' ')[0]}! 👋`;
+  const xp=TUTOR_DATA.xp,floor=xpFloor(xp),target=xpTarget(xp),pct=Math.min(100,Math.round(((xp-floor)/(target-floor))*100));
+  const pending=TUTOR_DATA.pendingReviews,active=TUTOR_DATA.activeStudents,history=TUTOR_DATA.teachingHistory.slice(0,5);
+  document.getElementById('akun-content').innerHTML=`
+    <div class="points-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
+        <div><div class="xp-label">Total XP</div><div class="xp-number">${xp.toLocaleString()}</div></div>
+        ${tierBadge(TUTOR_DATA.tier,true)}
+      </div>
+      <div style="position:relative;z-index:1">
+        <div class="xp-progress-bg"><div class="xp-progress-fill" style="width:${pct}%"></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:10px;color:rgba(255,255,255,.5)">${pct}% menuju ${xpNextLabel(xp)}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.5)">+${TUTOR_DATA.xpThisMonth} XP bulan ini</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:14px;position:relative;z-index:1;background:rgba(0,0,0,.15);border-radius:10px;padding:10px 14px">
+        <div style="text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:#fff">${TUTOR_DATA.streak}</div><div style="font-size:9px;color:rgba(255,255,255,.45);font-weight:600">🔥 Streak</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.1)"></div>
+        <div style="text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:#fff">${TUTOR_DATA.teachingHistory.length}</div><div style="font-size:9px;color:rgba(255,255,255,.45);font-weight:600">Total Sesi</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.1)"></div>
+        <div style="text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:#fff">${active.length}</div><div style="font-size:9px;color:rgba(255,255,255,.45);font-weight:600">Siswa Aktif</div></div>
+        <div style="margin-left:auto;display:flex;align-items:center"><button onclick="openXpLog()" style="background:rgba(255,255,255,.12);border:none;border-radius:8px;color:rgba(255,255,255,.8);font-size:11px;font-weight:700;padding:6px 12px;cursor:pointer;font-family:var(--fbody)">Detail →</button></div>
+      </div>
+    </div>
+
+    <!-- Cara Dapat XP -->
+    <div class="card" style="margin-bottom:14px;background:var(--bg)">
+      <div class="sec-title">Cara Dapat XP</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        ${[{icon:'ph-fill ph-chalkboard',c:'var(--primary)',bg:'var(--primary-dim)',l:'Sesi selesai',v:'+100 XP'},{icon:'ph-fill ph-star',c:'#D97706',bg:'#FFFBEB',l:'Rating ⭐5',v:'+50 XP'},{icon:'ph-fill ph-clipboard-text',c:'#7C3AED',bg:'#F5F3FF',l:'Isi laporan',v:'+15 XP'}].map(x=>`<div style="background:${x.bg};border-radius:10px;padding:10px 8px;text-align:center"><i class="${x.icon}" style="font-size:20px;color:${x.c};display:block;margin-bottom:4px"></i><div style="font-size:9px;color:var(--sub);font-weight:600">${x.l}</div><div style="font-size:11px;font-weight:800;color:${x.c}">${x.v}</div></div>`).join('')}
+      </div>
+    </div>
+
+    ${pending.length>0?`
+    <div style="background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="scrollToReviews()">
+      <i class="ph-fill ph-warning-circle" style="font-size:24px;color:#D97706;flex-shrink:0"></i>
+      <div style="flex:1"><div style="font-size:13px;font-weight:800;color:#92400E">${pending.length} Laporan Sesi Perlu Diisi</div><div style="font-size:11px;color:#B45309">Tulis review untuk siswamu · +15 XP per laporan</div></div>
+      <i class="ph-bold ph-caret-right" style="color:#D97706"></i>
+    </div>`:''}
+
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="sec-title" style="margin-bottom:0">Siswa Aktifku (${active.length})</div>
+      </div>
+      ${active.map(s=>`
+        <div class="student-row" onclick="openStudentDetail('${s.id}')">
+          <div style="width:36px;height:36px;border-radius:10px;background:${s.color}22;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ph-fill ph-student" style="font-size:18px;color:${s.color}"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700">${s.name}</div>
+            <div style="font-size:11px;color:var(--sub)">${s.level} · ${s.subject} · ${s.sessions} sesi</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:10px;color:var(--sub);margin-bottom:2px">Sesi berikut</div>
+            <div style="font-size:11px;font-weight:700;color:var(--primary)">${s.nextSession.split('·')[0].trim()}</div>
           </div>
         </div>
-        <p style="font-size:13px;color:#666;line-height:1.6">${t.bio}</p>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <div class="sec-title">Mata pelajaran</div>
-        <div class="subj-wrap">${t.subjects.map(s=>`<span class="subj-chip sel" style="cursor:default">${s}</span>`).join('')}</div>
-      </div>
-      <div class="card" style="margin-bottom:20px">
-        <div class="sec-title">Tarif</div>
-        <div style="font-size:28px;font-weight:800;color:var(--primary)">${fmt(t.rate)}<span style="font-size:14px;font-weight:400;color:var(--sub)">/jam</span></div>
-      </div>
-      <button class="pill-btn primary" onclick="openBookingStep1('${t.id}')">Booking Sesi →</button>
+      `).join('')}
     </div>
-  `);
-}
 
-// ── BOOKING ───────────────────────────────────────────────────────────────────
-function openBookingStep1(tid){
-  const t=TUTORS.find(x=>x.id===tid);if(!t)return;
-  let selSubj=t.subjects[0];
-  openSubpage(`
-    <div class="page-header">
-      <button class="back-btn" onclick="openTutorDetail('${tid}')">←</button>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700">Pilih Mata Pelajaran</div><div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:33%"></div></div></div>
-      <span style="font-size:11px;color:var(--sub);font-weight:700">1/3</span>
-    </div>
-    <div style="padding:16px">
-      <div class="card">
-        <div class="sec-title">Tutor</div>
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px">
-          ${av(t.name,36)} <div><div style="font-weight:700;font-size:13px">${t.name}</div><div style="font-size:11px;color:var(--sub)">${fmt(t.rate)}/jam</div></div>
-        </div>
-        <div class="sec-title">Pilih mata pelajaran</div>
-        <div class="subj-wrap" id="subj-pick">${t.subjects.map(s=>`<button class="subj-chip${s===selSubj?' sel':''}" onclick="pickSubj(this,'${tid}','${s}')">${s}</button>`).join('')}</div>
-      </div>
-      <div style="margin-top:12px">
-        <button class="pill-btn primary" onclick="openBookingStep2('${tid}','${selSubj}')">Lanjut →</button>
-      </div>
-    </div>
-  `);
-}
-function pickSubj(el,tid,subj){
-  document.querySelectorAll('#subj-pick .subj-chip').forEach(e=>e.classList.remove('sel'));
-  el.classList.add('sel');
-  el.closest('[style*="padding:16px"]').querySelector('.pill-btn').onclick=()=>openBookingStep2(tid,subj);
-}
-
-function openBookingStep2(tid,subj){
-  const t=TUTORS.find(x=>x.id===tid);if(!t)return;
-  let selSlot='',selDur=60;
-  openSubpage(`
-    <div class="page-header">
-      <button class="back-btn" onclick="openBookingStep1('${tid}')">←</button>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700">Pilih Jadwal</div><div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:66%"></div></div></div>
-      <span style="font-size:11px;color:var(--sub);font-weight:700">2/3</span>
-    </div>
-    <div style="padding:16px">
-      <div class="card" style="margin-bottom:12px">
-        <div class="sec-title">Durasi sesi</div>
-        <div class="tier-sel">
-          ${[60,90,120].map(d=>`<button class="tier-item${d===60?' sel':''}" onclick="pickDur(this,${d})" style="border-color:${d===60?'var(--primary)':'var(--border)'};background:${d===60?'var(--primary-dim)':'var(--card)'};color:${d===60?'var(--primary)':'var(--text)'}">${d} mnt<br><span style="font-size:10px;color:var(--sub);font-weight:400">${fmt(t.rate*d/60)}</span></button>`).join('')}
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:12px">
-        <div class="sec-title">Slot tersedia</div>
-        <div class="slot-grid" id="slot-grid">
-          ${SLOTS.map(s=>`<button class="slot-item" onclick="pickSlot(this,'${s.id}','${tid}','${subj}',60)"><div style="font-size:12px;font-weight:700">${s.day}</div><div style="font-size:14px;font-weight:800;color:var(--primary)">${s.t}</div></button>`).join('')}
-        </div>
-      </div>
-      <button class="pill-btn primary" id="step2-next" onclick="toast('Pilih slot terlebih dahulu')" style="opacity:.5">Lanjut →</button>
-    </div>
-  `);
-}
-function pickDur(el,dur){
-  document.querySelectorAll('.tier-item').forEach(e=>{e.style.borderColor='var(--border)';e.style.background='var(--card)';e.style.color='var(--text)'});
-  el.style.borderColor='var(--primary)';el.style.background='var(--primary-dim)';el.style.color='var(--primary)';
-}
-function pickSlot(el,slotId,tid,subj,dur){
-  document.querySelectorAll('.slot-item').forEach(e=>e.classList.remove('sel'));
-  el.classList.add('sel');
-  const s=SLOTS.find(x=>x.id===slotId);
-  const btn=document.getElementById('step2-next');
-  btn.style.opacity='1';btn.onclick=()=>openBookingStep3(tid,subj,slotId,dur);
-}
-
-function openBookingStep3(tid,subj,slotId,dur){
-  const t=TUTORS.find(x=>x.id===tid);
-  const s=SLOTS.find(x=>x.id===slotId);
-  const amount=t.rate*(dur/60);
-  const fee=Math.round(amount*0.07);
-  const total=amount+fee;
-  openSubpage(`
-    <div class="page-header">
-      <button class="back-btn" onclick="openBookingStep2('${tid}','${subj}')">←</button>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700">Konfirmasi Booking</div><div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:100%"></div></div></div>
-      <span style="font-size:11px;color:var(--sub);font-weight:700">3/3</span>
-    </div>
-    <div style="padding:16px">
-      <div class="card" style="margin-bottom:12px">
-        <div class="sec-title">Ringkasan sesi</div>
-        ${[{l:'Tutor',v:t.name},{l:'Mata pelajaran',v:subj},{l:'Jadwal',v:`${s.day} · ${s.t}`},{l:'Durasi',v:`${dur} menit`},{l:'Biaya tutor',v:fmt(amount)},{l:'Service fee (7%)',v:fmt(fee)}].map(r=>`<div class="sum-row"><span style="font-size:12px;color:var(--sub)">${r.l}</span><span style="font-size:13px;font-weight:600">${r.v}</span></div>`).join('')}
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:2px solid #F0EDE5;margin-top:4px">
-          <span style="font-size:14px;font-weight:700">Total</span>
-          <span style="font-size:20px;font-weight:800;color:var(--primary)">${fmt(total)}</span>
-        </div>
-      </div>
-      <div class="field" style="margin-bottom:12px">
-        <label>Nomor WhatsApp kamu</label>
-        <input class="input" id="student-wa" placeholder="08xx-xxxx-xxxx">
-      </div>
-      <div style="font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:16px;background:var(--bg);border-radius:10px;padding:10px 12px">
-        Dana akan di-hold sampai sesi selesai. Konfirmasi dikirim via WhatsApp.
-      </div>
-      <button class="pill-btn primary" onclick="bookConfirm('${tid}','${subj}','${slotId}',${dur},${amount},${fee})">Konfirmasi & Bayar ${fmt(total)}</button>
-    </div>
-  `);
-}
-
-function bookConfirm(tid,subj,slotId,dur,amount,fee){
-  const t=TUTORS.find(x=>x.id===tid);
-  const s=SLOTS.find(x=>x.id===slotId);
-  const wa=document.getElementById('student-wa')?.value||'';
-  if(!wa.trim()){toast('Masukkan nomor WhatsApp dulu ya');return;}
-  const newBooking={id:'b'+(BOOKINGS.length+1),student:'Kamu',sWa:wa,tutor:t.name,subject:subj,date:s.day,time:s.t,dur,amount,fee,status:'pending',held:'Baru saja'};
-  BOOKINGS.push(newBooking);
-  toast(`Booking dikonfirmasi! Cek WhatsApp kamu ✓`);
-  closeSubpage();
-  navTo('home');
-}
-
-// ── DAFTAR ────────────────────────────────────────────────────────────────────
-function renderDaftar(){
-  document.getElementById('page-daftar').innerHTML=`
-    <div style="padding:20px 16px 0;position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:12px;border-bottom:1px solid var(--border)">
-      <h2>Daftar Jadi Tutor</h2>
-      <p style="font-size:12px;color:var(--sub);margin-top:2px">3 tahap seleksi · Mulai mengajar dalam 3–5 hari</p>
-    </div>
-    <div style="padding:16px">
-      <div class="card" style="margin-bottom:12px">
-        <div class="sec-title">Gate 1 dari 3</div>
-        <div style="font-family:var(--fdisplay);font-size:20px;font-weight:800;margin-bottom:8px">Data Diri</div>
-        <p style="font-size:13px;color:var(--sub);line-height:1.6">Isi data dasar dan upload KTM untuk verifikasi status mahasiswa aktif.</p>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
-        <div class="field"><label>Nama lengkap</label><input class="input" id="df-name" placeholder="Nama sesuai KTM"></div>
-        <div class="field"><label>Universitas</label><input class="input" id="df-uni" placeholder="Nama universitas"></div>
-        <div class="field"><label>Jurusan</label><input class="input" id="df-major" placeholder="Program studi"></div>
-        <div class="field"><label>Semester aktif</label>
-          <select class="input" id="df-sem">${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Semester ${s}</option>`).join('')}</select>
-        </div>
-        <div class="field"><label>WhatsApp aktif</label><input class="input" id="df-wa" placeholder="08xx-xxxx-xxxx" type="tel"></div>
-        <div class="field"><label>Email kampus</label><input class="input" id="df-email" placeholder="nama@university.ac.id" type="email"></div>
-        <div class="field">
-          <label>Upload KTM (foto)</label>
-          <div style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:var(--card)" onclick="toast('Fitur upload aktif setelah integrasi storage')">
-            <div style="font-size:24px;margin-bottom:6px">📄</div>
-            <div style="font-size:13px;font-weight:600;color:var(--sub)">Tap untuk upload foto KTM</div>
-            <div style="font-size:11px;color:var(--light);margin-top:3px">JPG, PNG — maks 5MB</div>
+    <div id="section-pending-review">
+      <div class="sec-title">📝 Review Perlu Dilakukan (${pending.length})</div>
+      ${pending.length?pending.map(r=>`
+        <div class="review-pending-card" style="margin-bottom:8px" onclick="openReviewForm('${r.id}')">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div style="display:flex;gap:10px;align-items:center">
+              ${av(r.student,38)}
+              <div>
+                <div style="font-size:13px;font-weight:700">${r.student}</div>
+                <div style="font-size:11px;color:var(--sub)">${r.subject} · ${r.date}</div>
+                <div style="font-size:11px;color:var(--text);margin-top:3px">📖 ${r.topic}</div>
+              </div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div style="font-size:10px;color:var(--sub)">${r.duration} mnt</div>
+              <div style="background:#FDE68A;color:#92400E;font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;margin-top:4px">Isi Review</div>
+            </div>
           </div>
         </div>
-      </div>
-      <button class="pill-btn primary" onclick="submitDaftar()">Kirim Pendaftaran →</button>
+      `):`<div style="background:var(--primary-dim);border-radius:12px;padding:14px;text-align:center;color:var(--primary);font-size:13px;font-weight:600"><i class="ph-fill ph-check-circle" style="margin-right:6px"></i>Semua sesi sudah diisi!</div>`}
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="sec-title">Riwayat Sesi</div>
+      ${history.map(h=>`
+        <div class="history-item">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div style="font-size:13px;font-weight:700">${h.student}</div><div style="font-size:11px;color:var(--sub)">${h.subject} · ${h.date} · ${h.dur} mnt</div></div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div style="font-family:var(--fmono);font-size:13px;color:#059669;font-weight:500">+${h.xp} XP</div>
+              <div style="font-size:10px;color:var(--light);">${masteryStars(Math.round(h.rating))}</div>
+              ${h.reviewed?`<span style="font-size:9px;background:var(--primary-dim);color:var(--primary);padding:2px 6px;border-radius:4px;font-weight:700">Review ✓</span>`:`<span style="font-size:9px;background:#FEF2F2;color:var(--danger);padding:2px 6px;border-radius:4px;font-weight:700">Belum</span>`}
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--sub);margin-top:5px">📖 ${h.topic}</div>
+        </div>
+      `).join('')}
     </div>
   `;
 }
+
+function renderAkunStudent(){
+  document.getElementById('akun-page-title').textContent='Progres Belajar';
+  document.getElementById('akun-page-sub').textContent=`Halo, ${currentUser.name.split(' ')[0]}! 👋`;
+  const logs=STUDENT_DATA.progressLogs;
+  const avgMastery=logs.length?(logs.reduce((a,l)=>a+l.mastery,0)/logs.length).toFixed(1):0;
+  const upcoming=STUDENT_DATA.upcomingSessions;
+
+  // SVG progress chart
+  const chartW=320,chartH=80;
+  const bars=logs.map((l,i)=>{
+    const bw=44,gap=16,x=i*(bw+gap)+20,bh=(l.mastery/5)*60,y=chartH-bh-10;
+    const th=getSubjectTheme(l.subject);
+    return `<g>
+      <rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6" fill="${th.c}" opacity=".85"/>
+      <text x="${x+bw/2}" y="${chartH-2}" text-anchor="middle" font-size="9" fill="#999" font-family="var(--fbody)">${l.topic.split(' ')[0]}</text>
+      <text x="${x+bw/2}" y="${y-4}" text-anchor="middle" font-size="10" fill="${th.c}" font-weight="700">${l.mastery}/5</text>
+    </g>`;
+  }).join('');
+
+  document.getElementById('akun-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="card" style="text-align:center;padding:14px 8px"><div style="font-family:var(--fmono);font-size:20px;color:var(--primary)">${STUDENT_DATA.sessions}</div><div style="font-size:10px;color:var(--sub);font-weight:600">Total Sesi</div></div>
+      <div class="card" style="text-align:center;padding:14px 8px"><div style="font-family:var(--fmono);font-size:20px;color:var(--primary)">${STUDENT_DATA.hoursTotal}</div><div style="font-size:10px;color:var(--sub);font-weight:600">Jam Belajar</div></div>
+      <div class="card" style="text-align:center;padding:14px 8px"><div style="font-family:var(--fmono);font-size:20px;color:#F59E0B">${avgMastery}★</div><div style="font-size:10px;color:var(--sub);font-weight:600">Avg. Penguasaan</div></div>
+    </div>
+
+    <!-- Progress Chart -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="sec-title">Grafik Penguasaan Materi</div>
+      <svg width="100%" viewBox="0 0 ${chartW} ${chartH}" style="overflow:visible">${bars}</svg>
+    </div>
+
+    <!-- Upcoming sessions -->
+    ${upcoming.length>0?`
+    <div class="card" style="margin-bottom:14px;background:var(--primary-dim);border-color:var(--primary)30">
+      <div class="sec-title">Sesi Berikutnya</div>
+      ${upcoming.map(u=>`
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:12px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ph-fill ph-calendar" style="font-size:20px;color:#fff"></i></div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:800;color:var(--primary)">${u.date} · ${u.time}</div>
+            <div style="font-size:12px;color:var(--sub)">${u.subject} dengan ${u.tutor} · ${u.duration} mnt</div>
+          </div>
+          <button onclick="toast('WhatsApp ${u.tutor}: 0812-xxxx')" style="background:var(--primary);border:none;border-radius:9px;padding:7px 12px;cursor:pointer;font-size:11px;font-weight:700;color:#fff;font-family:var(--fbody)"><i class="ph-fill ph-whatsapp-logo"></i> WA</button>
+        </div>
+      `).join('')}
+    </div>`:''}
+
+    <!-- Progress Logs -->
+    <div class="sec-title">Laporan Sesi dari Tutor</div>
+    ${logs.map(l=>`
+      <div class="card" style="margin-bottom:10px;cursor:pointer" onclick="openProgressDetail('${l.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:13px;font-weight:800">${l.topic}</div>
+            <div style="font-size:11px;color:var(--sub)">${l.subject} · ${l.date} · ${l.tutor}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px"><div style="font-size:10px;color:var(--sub);margin-bottom:3px">Penguasaan</div>${masteryStars(l.mastery)}</div>
+        </div>
+        ${masteryBar(l.mastery)}
+        <div style="font-size:12px;color:var(--sub);margin-top:8px;background:var(--bg);border-radius:8px;padding:8px 10px;line-height:1.5">${l.notes}</div>
+        ${l.homework?`<div style="font-size:11px;color:#D97706;margin-top:7px"><i class="ph-fill ph-clipboard-text" style="margin-right:4px"></i><strong>PR:</strong> ${l.homework}</div>`:''}
+      </div>
+    `).join('')}
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// STUDENT/PROGRESS DETAIL SUBPAGES
+// ══════════════════════════════════════════════════════════════════
+function openStudentDetail(sid){
+  const s=TUTOR_DATA.activeStudents.find(x=>x.id===sid);
+  if(!s)return;
+  const hist=TUTOR_DATA.teachingHistory.filter(h=>h.student===s.name);
+  openSubpage(`
+    <div class="page-header">
+      <button class="back-btn" onclick="closeSubpage()"><i class="ph ph-arrow-left"></i></button>
+      <div>${av(s.name,32)}</div>
+      <div><div style="font-size:15px;font-weight:700">${s.name}</div><div style="font-size:11px;color:var(--sub)">${s.level} · ${s.subject}</div></div>
+    </div>
+    <div style="padding:16px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+        <div class="card" style="padding:12px 8px;text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:var(--primary)">${s.sessions}</div><div style="font-size:10px;color:var(--sub)">Sesi</div></div>
+        <div class="card" style="padding:12px 8px;text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:#F59E0B">${(hist.reduce((a,h)=>a+h.rating,0)/Math.max(hist.length,1)).toFixed(1)}</div><div style="font-size:10px;color:var(--sub)">Avg. Rating</div></div>
+        <div class="card" style="padding:12px 8px;text-align:center"><div style="font-family:var(--fmono);font-size:18px;color:#059669">${hist.filter(h=>h.reviewed).length}</div><div style="font-size:10px;color:var(--sub)">Diulas</div></div>
+      </div>
+      <div class="card" style="margin-bottom:14px;background:var(--primary-dim);border-color:var(--primary)30">
+        <div style="font-size:11px;color:var(--sub);font-weight:600;margin-bottom:4px">Sesi berikutnya</div>
+        <div style="font-size:15px;font-weight:800;color:var(--primary)">${s.nextSession}</div>
+      </div>
+      <div class="sec-title">Riwayat Sesi</div>
+      ${hist.map(h=>`
+        <div class="history-item">
+          <div style="display:flex;justify-content:space-between">
+            <div><div style="font-size:12px;font-weight:700">${h.topic}</div><div style="font-size:11px;color:var(--sub)">${h.date} · ${h.dur} mnt</div></div>
+            <div style="text-align:right"><div style="font-family:var(--fmono);font-size:12px;color:#059669">+${h.xp} XP</div><div style="font-size:10px">${masteryStars(Math.round(h.rating))}</div>${h.reviewed?'':'<button onclick="openReviewForm(\''+h.id+'\')" style="background:#FDE68A;border:none;border-radius:6px;padding:3px 8px;cursor:pointer;font-size:10px;font-weight:700;font-family:var(--fbody);margin-top:3px">Isi Review</button>'}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function openProgressDetail(lid){
+  const l=STUDENT_DATA.progressLogs.find(x=>x.id===lid);
+  if(!l)return;
+  const th=getSubjectTheme(l.subject);
+  openSubpage(`
+    <div class="page-header">
+      <button class="back-btn" onclick="closeSubpage()"><i class="ph ph-arrow-left"></i></button>
+      <div><div style="font-size:15px;font-weight:700">Detail Laporan</div><div style="font-size:11px;color:var(--sub)">${l.date} · ${l.subject}</div></div>
+    </div>
+    <div style="height:60px;background:${th.gradient};position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);background-size:12px 12px"></div>
+      <div style="position:absolute;right:10px;top:-5px;font-size:70px;opacity:.15;line-height:1">${th.emoji}</div>
+    </div>
+    <div style="padding:16px">
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Materi Sesi</div>
+        <div style="font-size:14px;font-weight:700">${l.topic}</div>
+        <div style="font-size:12px;color:var(--sub);margin-top:4px">${l.subject} · ${l.tutor}</div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Tingkat Penguasaan</div>
+        ${masteryBar(l.mastery)}
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="sec-title">Catatan Tutor</div>
+        <p style="font-size:13px;color:var(--sub);line-height:1.6">${l.notes}</p>
+      </div>
+      ${l.homework?`<div class="card" style="background:#FFFBEB;border-color:#FDE68A">
+        <div class="sec-title">PR / Tugas</div>
+        <p style="font-size:13px;color:#92400E;line-height:1.6">${l.homework}</p>
+      </div>`:''}
+    </div>
+  `);
+}
+
+function openXpLog(){
+  openSubpage(`
+    <div class="page-header">
+      <button class="back-btn" onclick="closeSubpage()"><i class="ph ph-arrow-left"></i></button>
+      <div><div style="font-size:15px;font-weight:700">Riwayat XP</div><div style="font-size:11px;color:var(--sub)">Semua aktifitas poin</div></div>
+    </div>
+    <div style="padding:16px">
+      ${TUTOR_DATA.xpLog.map(l=>`
+        <div class="xp-log-item">
+          <div><div style="font-size:13px;font-weight:600">${l.label}</div>${l.bonus?`<div style="font-size:10px;color:var(--accent);font-weight:700;margin-top:2px">${l.bonus}</div>`:''}<div style="font-size:11px;color:var(--light)">${l.date}</div></div>
+          <div class="xp-plus">+${l.xp}</div>
+        </div>
+      `).join('')}
+    </div>
+  `);
+}
+
+function scrollToReviews(){
+  const el=document.getElementById('section-pending-review');
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ══════════════════════════════════════════════════════════════════
+// REVIEW FORM
+// ══════════════════════════════════════════════════════════════════
+let _reviewMasteryVal=0;
+function openReviewForm(rid){
+  const r=TUTOR_DATA.pendingReviews.find(x=>x.id===rid)||TUTOR_DATA.teachingHistory.find(x=>x.id===rid);
+  if(!r)return;
+  _reviewMasteryVal=0;
+  openSubpage(`
+    <div class="page-header">
+      <button class="back-btn" onclick="closeSubpage()"><i class="ph ph-arrow-left"></i></button>
+      <div><div style="font-size:15px;font-weight:700">Laporan Sesi</div><div style="font-size:11px;color:var(--sub)">${r.student} · ${r.date}</div></div>
+      <span style="margin-left:auto;background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700">+15 XP</span>
+    </div>
+    <div style="padding:16px">
+      <div class="card" style="margin-bottom:14px;display:flex;gap:12px;align-items:center">
+        ${av(r.student,40)}
+        <div><div style="font-size:14px;font-weight:800">${r.student}</div><div style="font-size:12px;color:var(--sub)">${r.subject} · ${r.date} · ${r.duration||r.dur} mnt</div><div style="font-size:11px;color:var(--text);margin-top:3px">📖 ${r.topic}</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="field">
+          <label>Topik / Materi yang Diajarkan</label>
+          <input class="input" id="review-topic" value="${r.topic}" placeholder="Topik sesi ini">
+        </div>
+        <div class="field">
+          <label>Tingkat Penguasaan Siswa</label>
+          <div id="mastery-stars" style="display:flex;gap:8px;font-size:30px;margin-bottom:4px">
+            ${[1,2,3,4,5].map(i=>`<span onclick="setMastery(${i})" style="cursor:pointer;color:#E5E0D5;transition:all .15s" id="star-${i}">★</span>`).join('')}
+          </div>
+          <div id="mastery-label" style="font-size:12px;color:var(--sub);font-weight:600;min-height:18px"></div>
+        </div>
+        <div class="field">
+          <label>Catatan Perkembangan (untuk orang tua / siswa)</label>
+          <textarea class="input" id="review-notes" rows="4" placeholder="Tuliskan perkembangan, kelebihan, atau hal yang perlu ditingkatkan..."></textarea>
+        </div>
+        <div class="field">
+          <label>PR / Tugas untuk Siswa</label>
+          <input class="input" id="review-hw" placeholder="Contoh: Kerjakan soal latihan 5.1–5.3 hal. 120">
+        </div>
+        <div class="field">
+          <label>Target Sesi Berikutnya</label>
+          <input class="input" id="review-next" placeholder="Contoh: Lanjut ke bab 6 — Integral Substitusi">
+        </div>
+        <button class="pill-btn primary" onclick="submitReview('${rid}')"><i class="ph-bold ph-paper-plane-tilt"></i> Kirim Laporan Sesi</button>
+        <div style="font-size:11px;color:var(--light);text-align:center"><i class="ph ph-lock"></i> Laporan ini diterima oleh siswa & admin</div>
+      </div>
+    </div>
+  `);
+}
+
+function setMastery(n){
+  _reviewMasteryVal=n;
+  const labels=['','Perlu Banyak Latihan','Butuh Review','Cukup Paham','Baik','Sangat Menguasai'];
+  const colors=['','#EF4444','#F97316','#EAB308','#22C55E','#059669'];
+  document.getElementById('mastery-label').textContent=labels[n];
+  document.getElementById('mastery-label').style.color=colors[n];
+  [1,2,3,4,5].forEach(i=>{
+    const el=document.getElementById('star-'+i);
+    el.style.color=i<=n?'#F59E0B':'#E5E0D5';
+    el.style.transform=i===n?'scale(1.2)':'scale(1)';
+  });
+}
+
+function submitReview(rid){
+  const notes=document.getElementById('review-notes')?.value||'';
+  const topic=document.getElementById('review-topic')?.value||'';
+  if(!notes.trim()){toast('Isi catatan perkembangan siswa terlebih dahulu');return;}
+  if(!_reviewMasteryVal){toast('Pilih tingkat penguasaan siswa (⭐)');return;}
+  const pi=TUTOR_DATA.pendingReviews.findIndex(x=>x.id===rid);
+  if(pi>=0)TUTOR_DATA.pendingReviews.splice(pi,1);
+  const hi=TUTOR_DATA.teachingHistory.find(x=>x.id===rid);
+  if(hi)hi.reviewed=true;
+  TUTOR_DATA.xp+=15;
+  TUTOR_DATA.xpLog.unshift({label:`Review ${hi?.student||'siswa'} — ${topic}`,xp:15,bonus:'✅ Review Bonus',date:'Hari ini'});
+  const badgeEl=document.getElementById('sb-badge-review');
+  if(badgeEl)badgeEl.style.display=TUTOR_DATA.pendingReviews.length>0?'inline':'none';
+  const dot=document.getElementById('nav-review-dot');
+  if(dot)dot.style.display=TUTOR_DATA.pendingReviews.length>0?'block':'none';
+  updateUIForRole();
+  toast('✅ Laporan sesi berhasil dikirim! +15 XP');
+  closeSubpage();
+  renderAkunTutor();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// DAFTAR
+// ══════════════════════════════════════════════════════════════════
+function renderDaftar(){
+  if(currentUser){
+    document.getElementById('daftar-content').innerHTML=`
+      <div style="text-align:center;padding:32px 20px">
+        <i class="ph-fill ph-check-circle" style="font-size:48px;color:var(--primary);display:block;margin-bottom:12px"></i>
+        <h3 style="margin-bottom:6px">Kamu sudah masuk!</h3>
+        <p style="font-size:13px;color:var(--sub);margin-bottom:20px">Kamu sudah terdaftar sebagai ${currentUser.role==='tutor'?'Tutor Aktif':'Siswa Member'}.</p>
+        <button class="pill-btn primary" onclick="navTo('akun')">Ke Dasbor <i class="ph-bold ph-arrow-right"></i></button>
+      </div>`;return;
+  }
+  document.getElementById('daftar-content').innerHTML=`
+    <div class="card" style="margin-bottom:12px;text-align:center;padding:20px">
+      <i class="ph-fill ph-chalkboard-teacher" style="font-size:44px;color:var(--primary);margin-bottom:10px;display:block"></i>
+      <h3 style="margin-bottom:4px">Bergabung sebagai Tutor</h3>
+      <p style="font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:14px">Kamu mahasiswa aktif & punya passion mengajar? Daftar dan mulai hasilkan pendapatan sambil kuliah.</p>
+      <div style="display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--bg);border-radius:10px;padding:12px;margin-bottom:14px">
+        ${[['📋 Gate 1','Upload KTM — verifikasi mahasiswa aktif'],['🎙️ Gate 2','Interview & uji kemampuan mengajar'],['📚 Gate 3','Upload bukti nilai per mata pelajaran']].map(([g,d])=>`<div style="display:flex;gap:10px;align-items:center"><div style="font-size:12px;font-weight:700;width:64px;flex-shrink:0">${g}</div><div style="font-size:12px;color:var(--sub)">${d}</div></div>`).join('')}
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+      <div class="field"><label>Nama Lengkap</label><input class="input" id="df-name" placeholder="Nama sesuai KTM"></div>
+      <div class="field"><label>Universitas</label><input class="input" id="df-uni" placeholder="Nama universitas"></div>
+      <div class="field"><label>Program Studi</label><input class="input" id="df-major" placeholder="Jurusan aktif"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label>Semester</label><select class="input" id="df-sem">${[1,2,3,4,5,6,7,8].map(s=>`<option value="${s}">Semester ${s}</option>`).join('')}</select></div>
+        <div class="field"><label>WhatsApp</label><input class="input" id="df-wa" placeholder="08xx..." type="tel"></div>
+      </div>
+      <div class="field"><label>Email Kampus</label><input class="input" id="df-email" placeholder="nama@university.ac.id" type="email"></div>
+      <div class="field">
+        <label>Upload KTM</label>
+        <div style="border:2px dashed var(--border);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:var(--card)" onclick="toast('Upload aktif setelah integrasi storage')">
+          <i class="ph-fill ph-upload-simple" style="font-size:28px;color:var(--light);display:block;margin-bottom:6px"></i>
+          <div style="font-size:12px;font-weight:600;color:var(--sub)">Tap untuk upload foto KTM</div>
+          <div style="font-size:10px;color:var(--light);margin-top:3px">JPG, PNG — maks 5MB</div>
+        </div>
+      </div>
+    </div>
+    <button class="pill-btn primary" onclick="submitDaftar()"><i class="ph-bold ph-paper-plane-tilt"></i> Kirim Pendaftaran</button>
+  `;
+}
+
 function submitDaftar(){
   const name=document.getElementById('df-name')?.value||'';
   const uni=document.getElementById('df-uni')?.value||'';
   const wa=document.getElementById('df-wa')?.value||'';
   if(!name||!uni||!wa){toast('Lengkapi data terlebih dahulu');return;}
-  const sem=parseInt(document.getElementById('df-sem')?.value)||1;
-  const newApp={id:'a'+(APPS.length+1),name,uni,major:document.getElementById('df-major')?.value||'-',sem,wa,email:document.getElementById('df-email')?.value||'-',status:'pending_ktm',time:'Baru saja'};
-  APPS.push(newApp);
-  toast(`Pendaftaran ${name} dikirim! Cek WA kamu ✓`);
-  document.getElementById('page-daftar').innerHTML=`
-    <div style="padding:48px 20px;text-align:center">
-      <div style="font-size:48px;margin-bottom:16px">✅</div>
+  document.getElementById('daftar-content').innerHTML=`
+    <div style="padding:40px 20px;text-align:center">
+      <div style="font-size:56px;margin-bottom:16px">✅</div>
       <div style="font-family:var(--fdisplay);font-size:22px;font-weight:800;margin-bottom:8px">Pendaftaran Terkirim!</div>
-      <p style="font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:24px">Tim kami akan review KTM kamu dalam 1×24 jam. Notifikasi via WhatsApp.</p>
+      <p style="font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:24px">Tim kami akan review KTM <b>${name}</b> dalam 1×24 jam.<br>Notifikasi dikirim via WhatsApp.</p>
       <button class="pill-btn primary" onclick="renderDaftar()">Daftar Lagi</button>
-    </div>
-  `;
+    </div>`;
+  toast(`Pendaftaran ${name} dikirim! ✓`);
 }
 
-// ── ADMIN ─────────────────────────────────────────────────────────────────────
-function renderAdmin(){
-  // ensure tabs are rendered fresh
-}
-function adminTab(tab,el){
-  document.querySelectorAll('.admin-tab').forEach(e=>e.classList.remove('active'));
-  if(el)el.classList.add('active');
-  const c=document.getElementById('admin-content');
-  if(tab==='rekrutmen')c.innerHTML=renderRekrutmen();
-  else if(tab==='booking')c.innerHTML=renderBookingAdmin();
-  else if(tab==='wa-log')c.innerHTML=renderWaLog();
-}
-
-function renderRekrutmen(){
-  const byGate=(status)=>APPS.filter(a=>a.status===status);
-  const groups=[
-    {title:'Gate 1 — Review KTM',items:[...byGate('pending_ktm'),...byGate('ktm_rejected')]},
-    {title:'Gate 2 — Interview',items:[...byGate('interview_scheduled'),...byGate('interview_passed'),...byGate('interview_failed')]},
-    {title:'Gate 3 — Bukti Mapel',items:[...byGate('pending_subject_proof'),...byGate('active')]},
-  ];
-  return `<div style="padding:16px">${groups.map(g=>`
-    <div style="margin-bottom:20px">
-      <div class="sec-title">${g.title} · ${g.items.length}</div>
-      ${g.items.length?g.items.map(a=>`
-        <div class="card" onclick="openAppDetail('${a.id}')" style="cursor:pointer;margin-bottom:8px;display:flex;gap:12px;align-items:center">
-          ${av(a.name,38)}
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:700">${a.name}</div>
-            <div style="font-size:11px;color:var(--sub)">${a.major} · ${a.uni}</div>
-            <div style="display:flex;gap:6px;align-items:center;margin-top:5px;flex-wrap:wrap">${pill(a.status)}<span style="font-size:10px;color:var(--light)">${a.time}</span></div>
-          </div>
-          <span style="color:var(--light);font-size:16px;flex-shrink:0">›</span>
-        </div>
-      `).join(''):`<div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center;color:var(--light);font-size:13px">Tidak ada pendaftar</div>`}
-    </div>
-  `).join('')}</div>`;
-}
-
-function openAppDetail(id){
-  const a=APPS.find(x=>x.id===id);if(!a)return;
-  const isKtm=a.status==='pending_ktm'||a.status==='ktm_rejected';
-  const isInterview=['interview_scheduled','interview_passed','interview_failed'].includes(a.status);
-  const isSubj=a.status==='pending_subject_proof'||a.status==='active';
-  openSubpage(`
-    <div class="page-header">
-      <button class="back-btn" onclick="closeSubpage()">←</button>
-      <div style="flex:1">
-        <div style="font-size:15px;font-weight:700">${a.name}</div>
-        <div style="font-size:11px;color:var(--sub)">${a.major} · Sem ${a.sem}</div>
-      </div>
-      ${pill(a.status)}
-    </div>
-    <div style="padding:0 16px 32px">
-      <div class="card" style="margin-bottom:12px">
-        ${[{l:'Universitas',v:a.uni},{l:'Jurusan',v:a.major},{l:'Semester',v:a.sem},{l:'WhatsApp',v:a.wa},{l:'Email',v:a.email},{l:'Daftar',v:a.time}].map(r=>`<div class="sum-row"><span style="font-size:12px;color:var(--sub)">${r.l}</span><span style="font-size:12px;font-weight:600">${r.v}</span></div>`).join('')}
-      </div>
-      ${isKtm?`
-        <div class="card" style="margin-bottom:12px">
-          <div class="sec-title">KTM Upload</div>
-          <div style="background:var(--bg);border-radius:10px;height:80px;display:flex;align-items:center;justify-content:center;color:var(--light);font-size:13px">Preview KTM (dummy)</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="pill-btn primary" onclick="approveApp('${a.id}','approve_ktm')">✓ KTM Valid — Jadwalkan Interview</button>
-          <button class="pill-btn danger" onclick="openRejectModal('${a.id}','reject_ktm')">✗ KTM Tidak Valid</button>
-        </div>
-      `:''}
-      ${isInterview?`
-        <div class="card" style="margin-bottom:12px">
-          <div class="sec-title">Interview</div>
-          ${a.slot?`<div style="font-size:14px;font-weight:700;color:var(--primary)">${a.slot}</div>`:'<div style="font-size:13px;color:var(--sub)">Slot belum dikonfirmasi</div>'}
-        </div>
-        ${a.status==='interview_scheduled'?`
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="pill-btn primary" onclick="approveApp('${a.id}','pass_interview')">✓ Lulus Interview</button>
-          <button class="pill-btn danger" onclick="openRejectModal('${a.id}','fail_interview')">✗ Tidak Lulus</button>
-        </div>`:''}
-        ${a.status==='interview_passed'?`
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <p style="font-size:13px;color:var(--sub);text-align:center;padding:8px 0">Lanjut ke Gate 3: Bukti Mapel</p>
-          <button class="pill-btn primary" onclick="approveApp('${a.id}','pass_interview')">→ Minta Upload Bukti Mapel</button>
-        </div>`:''}
-      `:''}
-      ${isSubj?`
-        <div class="card" style="margin-bottom:12px">
-          <div class="sec-title">Mata Pelajaran</div>
-          <div class="subj-wrap">${(a.subjects||[]).map(s=>`<span class="subj-chip sel" style="cursor:default">${s}</span>`).join('')||'<span style="font-size:13px;color:var(--sub)">Belum diisi</span>'}</div>
-        </div>
-        <div class="sec-title">Set tier tutor</div>
-        <div class="tier-sel" style="margin-bottom:12px">
-          ${['Bronze','Silver','Gold'].map(tier=>`<button class="tier-item" onclick="setAppTier('${a.id}','${tier}')" style="border-color:${a.tier===tier?'var(--primary)':'var(--border)'};background:${a.tier===tier?'var(--primary-dim)':'var(--card)'};color:${a.tier===tier?'var(--primary)':'var(--text)'}">${tier}</button>`).join('')}
-        </div>
-        ${a.status==='pending_subject_proof'?`
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <button class="pill-btn primary" onclick="approveApp('${a.id}','activate')">✓ Aktifkan sebagai Tutor</button>
-          <button class="pill-btn amber" onclick="openRejectModal('${a.id}','revise_proof')">↩ Minta Revisi Bukti</button>
-        </div>`:''}
-        ${a.status==='active'?`<div style="background:var(--primary-dim);border-radius:12px;padding:14px;text-align:center;font-size:13px;font-weight:700;color:var(--primary)">✓ Tutor aktif ${a.tier||'Bronze'}</div>`:''}
-      `:''}
-    </div>
-  `);
-}
-
-function setAppTier(id,tier){
-  const a=APPS.find(x=>x.id===id);if(a)a.tier=tier;
-  openAppDetail(id);
-}
-
-function approveApp(id,action){
-  const a=APPS.find(x=>x.id===id);if(!a)return;
-  if(action==='approve_ktm'){a.status='interview_scheduled';a.slot='Menunggu konfirmasi tutor';toast(`KTM ${a.name} disetujui — WA notif terkirim ✓`);}
-  else if(action==='pass_interview'){a.status='interview_passed';toast(`${a.name} lulus interview — lanjut Gate 3`);}
-  else if(action==='activate'){a.status='active';toast(`${a.name} aktif sebagai tutor ${a.tier||'Bronze'} ✓`);}
-  closeSubpage();
-  adminTab('rekrutmen',document.querySelector('.admin-tab.active'));
-}
-
-function openRejectModal(id,action){
-  const sp=document.getElementById('subpage');
-  const modal=document.createElement('div');
-  modal.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:flex-end';
-  modal.innerHTML=`
-    <div style="background:var(--card);border-radius:24px 24px 0 0;width:100%;padding:24px 20px 40px">
-      <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px"></div>
-      <h3 style="margin-bottom:6px">${action==='reject_ktm'?'Tolak KTM':action==='fail_interview'?'Tidak Lulus Interview':'Minta Revisi Bukti'}</h3>
-      <p style="font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.6">Tulis alasan yang akan dikirim ke pendaftar via WhatsApp.</p>
-      <textarea class="input" rows="4" id="rej-reason" placeholder="Contoh: KTM tidak terbaca jelas…" style="margin-bottom:14px"></textarea>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="pill-btn danger" onclick="doRejectApp('${id}','${action}')">Kirim Feedback via WhatsApp</button>
-        <button class="pill-btn ghost" onclick="this.closest('[style*=rgba]').remove()">Batal</button>
-      </div>
-    </div>
-  `;
-  sp.appendChild(modal);
-}
-
-function doRejectApp(id,action){
-  const reason=document.getElementById('rej-reason')?.value||'';
-  if(!reason.trim())return;
-  const a=APPS.find(x=>x.id===id);if(!a)return;
-  const ns=action==='reject_ktm'?'ktm_rejected':action==='fail_interview'?'interview_failed':'pending_subject_proof';
-  a.status=ns;a.feedback=reason;
-  toast(`Feedback dikirim ke ${a.name} via WA`);
-  closeSubpage();
-  adminTab('rekrutmen',document.querySelector('.admin-tab'));
-}
-
-function renderBookingAdmin(){
-  const active=BOOKINGS.filter(b=>['pending','confirmed'].includes(b.status));
-  const done=BOOKINGS.filter(b=>!['pending','confirmed'].includes(b.status));
-  const section=(title,items,emptyMsg)=>`
-    <div style="margin-bottom:20px">
-      <div class="sec-title">${title} · ${items.length}</div>
-      ${items.length?items.map(b=>`
-        <div class="card" onclick="openBookingDetail('${b.id}')" style="cursor:pointer;margin-bottom:8px;border-left:3px solid ${b.status==='confirmed'?'var(--primary)':b.status==='pending'?'#F59E0B':'#D1D5DB'}">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-            <div><div style="font-size:14px;font-weight:700">${b.student}</div><div style="font-size:12px;color:var(--sub)">${b.subject} · ${b.tutor}</div></div>
-            ${pill(b.status,true)}
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:12px;color:var(--light)">${b.date} · ${b.time}</span>
-            <span style="font-size:14px;font-weight:800;color:var(--primary)">${fmt(b.amount+b.fee)}</span>
-          </div>
-        </div>
-      `).join(''):`<div style="background:var(--bg);border-radius:12px;padding:16px;text-align:center;color:var(--light);font-size:13px">${emptyMsg}</div>`}
-    </div>
-  `;
-  return `<div style="padding:16px">
-    ${section('Perlu tindakan',active,'Tidak ada booking aktif')}
-    ${section('Selesai / Dibatalkan',done,'Belum ada riwayat')}
-  </div>`;
-}
-
-function openBookingDetail(id){
-  const b=BOOKINGS.find(x=>x.id===id);if(!b)return;
-  const total=b.amount+b.fee;
-  openSubpage(`
-    <div class="page-header">
-      <button class="back-btn" onclick="closeSubpage()">←</button>
-      <div><div style="font-size:15px;font-weight:700">${b.student}</div><div style="font-size:11px;color:var(--sub)">Booking #${b.id}</div></div>
-      ${pill(b.status,true)}
-    </div>
-    <div style="padding:0 16px 32px">
-      <div class="card" style="margin-bottom:12px">
-        ${[{l:'Tutor',v:b.tutor},{l:'Mata pelajaran',v:b.subject},{l:'Jadwal',v:`${b.date} · ${b.time}`},{l:'Durasi',v:`${b.dur} menit`},{l:'WA Siswa',v:b.sWa||'—'},{l:'Di-hold sejak',v:b.held},{l:'Biaya tutor',v:fmt(b.amount)},{l:'Service fee',v:fmt(b.fee)}].map(r=>`<div class="sum-row"><span style="font-size:12px;color:var(--sub)">${r.l}</span><span style="font-size:13px;font-weight:600">${r.v}</span></div>`).join('')}
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:2px solid #F0EDE5;margin-top:4px">
-          <span style="font-size:14px;font-weight:700">Total di-hold</span>
-          <span style="font-size:20px;font-weight:800;color:var(--primary)">${fmt(total)}</span>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${b.status==='pending'?`<button class="pill-btn primary" onclick="updateBooking('${b.id}','confirmed')">✓ Konfirmasi Booking</button>`:''}
-        ${b.status==='confirmed'?`<button class="pill-btn amber" onclick="updateBooking('${b.id}','completed')">✓ Selesai & Release ${fmt(b.amount)}</button>`:''}
-        ${['pending','confirmed'].includes(b.status)?`<button class="pill-btn danger" onclick="updateBooking('${b.id}','cancelled')">Batalkan & Refund</button>`:''}
-        ${b.status==='completed'?`<p style="text-align:center;font-size:13px;color:var(--sub);padding:10px 0">${fmt(b.amount)} diteruskan ke ${b.tutor} pada ${b.released||'baru saja'}.</p>`:''}
-      </div>
-    </div>
-  `);
-}
-
-function updateBooking(id,status){
-  const b=BOOKINGS.find(x=>x.id===id);if(!b)return;
-  b.status=status;
-  if(status==='completed')b.released='Baru saja';
-  const msgs={confirmed:`Booking ${b.student} dikonfirmasi ✓`,completed:`Sesi selesai · ${fmt(b.amount)} diteruskan ke ${b.tutor} ✓`,cancelled:'Booking dibatalkan — refund diproses'};
-  toast(msgs[status]);
-  closeSubpage();
-  adminTab('booking',document.querySelector('.admin-tab[onclick*="booking"]'));
-}
-
-function renderWaLog(){
-  const failed=NOTIFS.filter(n=>!n.ok);
-  return `<div style="padding:16px">
-    ${failed.length?`<div style="background:#FEF2F2;border-radius:12px;padding:12px 14px;margin-bottom:16px;border-left:3px solid #EF4444"><div style="font-size:12px;font-weight:700;color:#B91C1C;margin-bottom:2px">${failed.length} pesan gagal terkirim</div><div style="font-size:11px;color:#B91C1C80">Periksa nomor WA penerima dan kirim ulang.</div></div>`:''}
-    <div style="display:flex;flex-direction:column;gap:10px">
-      ${NOTIFS.map(n=>`
-        <div class="notif-card" style="border-left:3px solid ${n.ok?'var(--primary)':'#EF4444'}">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-            <div>
-              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
-                <span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:${n.ok?'var(--primary-dim)':'#FEF2F2'};color:${n.ok?'var(--primary)':'#B91C1C'}">${n.ok?'✓ Terkirim':'✗ Gagal'}</span>
-                <span style="font-size:10px;color:var(--light);background:var(--bg);padding:2px 8px;border-radius:10px">${n.type}</span>
-              </div>
-              <div style="font-size:13px;font-weight:700">${n.to} <span style="font-weight:400;color:var(--light);font-size:11px">· ${n.wa}</span></div>
-            </div>
-            <span style="font-size:10px;color:var(--light);flex-shrink:0;margin-left:8px">${n.sent}</span>
-          </div>
-          <div style="font-size:12px;color:var(--sub);line-height:1.6;background:var(--bg);padding:10px 12px;border-radius:10px;margin-bottom:${n.fail?8:0}px">${n.msg}</div>
-          ${n.fail?`<div style="font-size:11px;color:#B91C1C;background:#FEF2F2;padding:6px 10px;border-radius:8px;margin-bottom:8px">Alasan gagal: ${n.fail}</div>`:''}
-          ${n.id_wa?`<div style="font-size:10px;color:var(--light);font-family:var(--fmono);margin-bottom:${!n.ok?8:0}px">${n.id_wa}</div>`:''}
-          ${!n.ok?`<div style="display:flex;gap:8px"><button class="pill-btn amber sm">↩ Kirim Ulang</button><button class="pill-btn ghost sm">Tandai Ditangani</button></div>`:''}
-        </div>
-      `).join('')}
-    </div>
-  </div>`;
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
 renderHome();
 renderDaftar();
+updateUIForRole();
 </script>
 </body>
 </html>
