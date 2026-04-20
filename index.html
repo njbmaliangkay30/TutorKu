@@ -1471,13 +1471,51 @@ function setGenderFilter(g) {
   filterTutors();
 }
 
-function renderBrowse() {
-  document.getElementById('subject-filters').innerHTML=['Semua',...SUBJECTS].map(s=>`
-    <button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--border)'};background:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime-mid)':'var(--card)'};color:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--sub)'};border-radius:var(--r-xs);padding:5px 12px;font-size:11px;font-weight:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fmono);transition:all .15s">${s}</button>
-  `).join('');
-  filterTutors();
-}
+async function renderBrowse() {
+  // Tampilkan loading sementara
+  document.getElementById('tutor-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)"><i class="ph ph-circle-notch" style="animation:spinSlow 1s linear infinite;font-size:24px"></i><div style="margin-top:10px">Memuat tutor...</div></div>';
 
+  let tutorsData = TUTORS; // fallback
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('tutors')
+      .select('*')
+      .order('rating', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      // Mapping field dari Supabase ke format yang digunakan aplikasi
+      tutorsData = data.map(t => ({
+        id: t.id,
+        name: t.name,
+        gender: t.gender,
+        uni: t.university,
+        major: t.major,
+        tier: t.tier,
+        rate: t.rate,
+        rating: t.rating,
+        sessions: t.sessions_completed,
+        subjects: t.subjects,
+        tingkat: t.tingkat || ['SMA'],
+        bio: t.bio || '',
+        badges: t.badges || [],
+        online: t.online,
+        activeDays: t.active_days || [1,2,3,4,5]
+      }));
+    }
+  }
+
+  // Simpan ke cache global agar bisa digunakan fungsi lain
+  window.cachedTutors = tutorsData;
+
+  // Render filter mata pelajaran berdasarkan data tutor yang ada
+  const allSubjects = [...new Set(tutorsData.flatMap(t => t.subjects || []))];
+  document.getElementById('subject-filters').innerHTML = ['Semua', ...allSubjects].map(s =>
+    `<button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--border)'};background:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime-mid)':'var(--card)'};color:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--sub)'};border-radius:var(--r-xs);padding:5px 12px;font-size:11px;font-weight:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fmono);transition:all .15s">${s}</button>`
+  ).join('');
+
+  filterTutors(); // Panggil filter dengan data cache
+}
 function setSubjFilter(s) {
   activeSubjFilter=s==='Semua'?'':s;activeQCat=null;
   document.querySelectorAll('.quick-cat').forEach(el=>el.classList.remove('active'));
@@ -1486,7 +1524,8 @@ function setSubjFilter(s) {
 
 function filterTutors() {
   const q=(document.getElementById('search-input')?.value||'').toLowerCase();
-  const list=TUTORS.filter(t=>{
+  const tutors = window.cachedTutors || TUTORS;
+const list = tutors.filter(t => {
     const mq=!q||t.name.toLowerCase().includes(q)||t.subjects.some(s=>s.toLowerCase().includes(q))||t.major.toLowerCase().includes(q);
     const ms=!activeSubjFilter||t.subjects.includes(activeSubjFilter);
     const mg=activeGenderFilter==='all'||t.gender===activeGenderFilter;
@@ -2224,7 +2263,8 @@ function renderAdminSistem() {
    HOME RENDER
 ═══════════════════════════════════════════════════════════════════ */
 function renderHome() {
-  document.getElementById('home-tutors').innerHTML = TUTORS.slice(0,3).map(t=>createTutorCardHTML(t)).join('');
+  const tutors = window.cachedTutors || TUTORS;
+  document.getElementById('home-tutors').innerHTML = tutors.slice(0,3).map(t => createTutorCardHTML(t)).join('');
 }
 
 /* ═══════════════════════════════════════════════════════════════════
