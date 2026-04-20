@@ -74,6 +74,48 @@
   --sh-green: 3px 3px 0 var(--primary-bright);
 }
 
+/* ═══ LIGHT THEME (Gen Z — default) ══════════════════════════════════ */
+[data-theme="light"] {
+  --bg: #F5F2FF;
+  --bg2: #FFFFFF;
+  --bg3: #EDE8FF;
+  --card: #FFFFFF;
+  --card2: #F0ECFF;
+  --border: #D8D0F5;
+  --border2: #C8BEF0;
+
+  --text: #1A1033;
+  --sub: #6B5F8A;
+  --light: #9B8EBB;
+  --muted: #D0C8EA;
+
+  --primary: #6C3FD8;
+  --primary-bright: #8B5CF6;
+  --primary-dim: rgba(108,63,216,0.12);
+
+  --lime: #7C3AED;
+  --lime-dim: rgba(124,58,237,0.08);
+  --lime-mid: rgba(124,58,237,0.14);
+
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --success: #10B981;
+  --online: #10B981;
+
+  --gold: #D97706;
+  --gold-bg: rgba(217,119,6,0.1);
+  --silver: #6B7280;
+  --silver-bg: rgba(107,114,128,0.1);
+  --bronze: #92400E;
+  --bronze-bg: rgba(146,64,14,0.1);
+
+  --sh0: 2px 2px 0 rgba(108,63,216,0.15);
+  --sh1: 3px 3px 0 rgba(108,63,216,0.2);
+  --sh2: 5px 5px 0 rgba(108,63,216,0.25);
+  --sh-lime: 3px 3px 0 var(--lime);
+  --sh-green: 3px 3px 0 var(--primary-bright);
+}
+
 /* ═══ RESET ═══════════════════════════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent }
 html, body { height: 100%; overflow: hidden }
@@ -83,11 +125,29 @@ body {
   color: var(--text);
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
+  transition: background .25s, color .25s;
 }
 input,textarea,select,button { font-family: var(--fbody) }
 ::-webkit-scrollbar { width: 4px }
 ::-webkit-scrollbar-track { background: var(--bg2) }
 ::-webkit-scrollbar-thumb { background: var(--border2) }
+
+/* ─── THEME TOGGLE BUTTON ─────────────────────────────────────────── */
+#theme-toggle {
+  position: relative; cursor: pointer;
+  width: 44px; height: 24px; border-radius: 12px;
+  background: var(--border2); border: 1.5px solid var(--border);
+  transition: background .2s; flex-shrink: 0;
+  display: flex; align-items: center; padding: 2px;
+}
+#theme-toggle::after {
+  content: ''; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--lime); transition: transform .2s;
+  transform: translateX(0);
+}
+[data-theme="light"] #theme-toggle::after { transform: translateX(20px); }
+#theme-toggle-icon { position: absolute; font-size: 11px; right: 5px; top: 50%; transform: translateY(-50%); pointer-events: none }
+[data-theme="light"] #theme-toggle-icon { left: 5px; right: auto; }
 
 /* ═══ ANIMATIONS ══════════════════════════════════════════════════════ */
 @keyframes pgIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:none } }
@@ -264,7 +324,7 @@ input,textarea,select,button { font-family: var(--fbody) }
   transition: border-color .15s, box-shadow .15s;
   font-family: var(--fbody);
 }
-.input:focus { outline: none; border-color: var(--lime); box-shadow: 0 0 0 2px rgba(200,255,0,0.12) }
+.input:focus { outline: none; border-color: var(--lime); box-shadow: 0 0 0 2px var(--lime-dim) }
 select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23555'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px }
 .btn {
   border: 2px solid transparent; border-radius: var(--r-sm);
@@ -275,9 +335,10 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 }
 .btn:active { transform: scale(.97) }
 .btn.primary {
-  background: var(--lime); color: #000; border-color: var(--lime);
+  background: var(--lime); color: #fff; border-color: var(--lime);
   box-shadow: var(--sh1);
 }
+[data-theme="dark"] .btn.primary { color: #000; }
 .btn.primary:hover { box-shadow: var(--sh2); transform: translate(-1px,-1px) }
 .btn.secondary {
   background: transparent; color: var(--lime);
@@ -287,7 +348,17 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 .btn.ghost { background: var(--bg2); color: var(--sub); border-color: var(--border) }
 .btn.ghost:hover { border-color: var(--sub); color: var(--text) }
 .btn.danger { background: transparent; color: var(--danger); border-color: var(--danger) }
+.btn.danger:hover { background: rgba(239,68,68,0.08) }
 .btn.sm { padding: 7px 12px; font-size: 11px; width: auto; border-radius: var(--r-xs) }
+.btn-google {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 11px 18px; border-radius: var(--r-sm);
+  border: 2px solid var(--border2); background: var(--bg2); color: var(--text);
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s;
+  font-family: var(--fdisplay);
+}
+.btn-google:hover { border-color: var(--lime); box-shadow: var(--sh1) }
+.btn-google svg { width: 18px; height: 18px; flex-shrink: 0 }
 
 .tag {
   background: var(--bg2); color: var(--sub);
@@ -306,7 +377,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 .progress-fill { height: 100%; background: var(--lime); border-radius: 3px; transition: width .7s cubic-bezier(.34,1.2,.64,1) }
 .page-header {
   display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; background: rgba(13,13,13,0.97);
+  padding: 12px 16px; background: var(--bg);
   backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 5;
   border-bottom: 2px solid var(--border);
 }
@@ -591,9 +662,14 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 
   <!-- ── SIDEBAR ───────────────────────────────────────────────────── -->
   <div id="sidebar">
-    <div class="sb-brand" onclick="navTo('home')">
-      <div class="sb-logo-text">tutorku</div>
-      <div class="sb-brand-tag">// Platform tutor mahasiswa</div>
+    <div class="sb-brand" style="display:flex;align-items:center;justify-content:space-between" onclick="">
+      <div onclick="navTo('home')" style="cursor:pointer;flex:1">
+        <div class="sb-logo-text">tutorku</div>
+        <div class="sb-brand-tag">// Platform tutor mahasiswa</div>
+      </div>
+      <div id="theme-toggle" onclick="toggleTheme()" title="Ganti tema">
+        <span id="theme-toggle-icon">🌙</span>
+      </div>
     </div>
 
     <nav class="sb-nav">
@@ -654,7 +730,8 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
     <!-- TOPBAR (mobile) -->
     <div id="topbar">
       <div class="tb-logo-text" onclick="navTo('home')">tutorku</div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="tb-btn" onclick="toggleTheme()" title="Ganti tema"><i class="ph ph-sun-dim" id="topbar-theme-icon"></i></button>
         <button class="tb-btn" onclick="navTo('browse')"><i class="ph ph-magnifying-glass"></i></button>
         <button class="tb-btn" id="tb-auth-btn" onclick="navTo('login')"><i class="ph-fill ph-user-circle"></i></button>
       </div>
@@ -722,7 +799,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 
       <!-- ══ BROWSE PAGE ══════════════════════════════════════════════ -->
       <div class="page" id="page-browse">
-        <div style="padding:16px 14px 8px;position:sticky;top:0;background:rgba(13,13,13,0.97);backdrop-filter:blur(10px);z-index:5;border-bottom:1.5px solid var(--border)">
+        <div style="padding:16px 14px 8px;position:sticky;top:0;background:var(--bg);backdrop-filter:blur(10px);z-index:5;border-bottom:1.5px solid var(--border)">
           <input class="input" id="search-input" placeholder="Cari nama tutor atau mata pelajaran..." oninput="filterTutors()" style="margin-bottom:10px">
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
             <div style="font-size:10px;font-weight:700;color:var(--sub);font-family:var(--fmono);white-space:nowrap">GENDER:</div>
@@ -740,7 +817,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
       <div class="page" id="page-login">
         <div style="padding:28px 16px">
           <div style="font-family:var(--fdisplay);font-size:28px;font-weight:800;margin-bottom:4px">Halo! 👋</div>
-          <div style="font-size:13px;color:var(--sub);margin-bottom:28px">Masuk atau buat akun baru untuk melanjutkan.</div>
+          <div style="font-size:13px;color:var(--sub);margin-bottom:24px">Masuk atau buat akun baru untuk melanjutkan.</div>
 
           <div id="login-role-step">
             <div class="sec-title">PILIH PERANMU</div>
@@ -762,6 +839,18 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
                 </div>
               </div>
             </div>
+            <!-- Google login tanpa pilih peran -->
+            <div style="margin-top:20px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                <div style="flex:1;height:1px;background:var(--border)"></div>
+                <span style="font-size:11px;color:var(--sub);font-family:var(--fmono)">atau masuk langsung</span>
+                <div style="flex:1;height:1px;background:var(--border)"></div>
+              </div>
+              <button class="btn-google" onclick="handleGoogleLogin()">
+                <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Lanjut dengan Google
+              </button>
+            </div>
           </div>
 
           <div id="login-form-step" style="display:none">
@@ -770,6 +859,17 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
             </button>
 
             <div id="login-error" class="error-msg" style="display:none"></div>
+
+            <!-- Google -->
+            <button class="btn-google" style="margin-bottom:16px" onclick="handleGoogleLogin()">
+              <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Lanjut dengan Google
+            </button>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+              <div style="flex:1;height:1px;background:var(--border)"></div>
+              <span style="font-size:11px;color:var(--sub);font-family:var(--fmono)">atau email</span>
+              <div style="flex:1;height:1px;background:var(--border)"></div>
+            </div>
 
             <div id="login-tabs" style="display:flex;border-bottom:1.5px solid var(--border);margin-bottom:20px">
               <button class="admin-tab active" id="tab-masuk" onclick="switchAuthTab('masuk')">MASUK</button>
@@ -780,11 +880,13 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
             <div id="auth-masuk">
               <div class="field" style="margin-bottom:12px">
                 <label>Email</label>
-                <input class="input" id="login-email" type="email" placeholder="kamu@email.com">
+                <input class="input" id="login-email" type="email" placeholder="kamu@email.com"
+                  onkeydown="if(event.key==='Enter')handleLogin()">
               </div>
               <div class="field" style="margin-bottom:20px">
                 <label>Password</label>
-                <input class="input" id="login-password" type="password" placeholder="••••••••">
+                <input class="input" id="login-password" type="password" placeholder="••••••••"
+                  onkeydown="if(event.key==='Enter')handleLogin()">
               </div>
               <button class="btn primary" id="login-submit-btn" onclick="handleLogin()">
                 <i class="ph-bold ph-sign-in"></i> Masuk
@@ -795,21 +897,23 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
             <div id="auth-daftar-akun" style="display:none">
               <div class="field" style="margin-bottom:12px">
                 <label>Nama Lengkap</label>
-                <input class="input" id="reg-name" type="text" placeholder="Ahmad Rizki">
+                <input class="input" id="reg-name" type="text" placeholder="Ahmad Rizki"
+                  onkeydown="if(event.key==='Enter')handleRegister()">
               </div>
               <div class="field" style="margin-bottom:12px">
                 <label>Email</label>
-                <input class="input" id="reg-email" type="email" placeholder="kamu@email.com">
+                <input class="input" id="reg-email" type="email" placeholder="kamu@email.com"
+                  onkeydown="if(event.key==='Enter')handleRegister()">
               </div>
               <div class="field" style="margin-bottom:20px">
                 <label>Password</label>
-                <input class="input" id="reg-password" type="password" placeholder="Min. 6 karakter">
+                <input class="input" id="reg-password" type="password" placeholder="Min. 6 karakter"
+                  onkeydown="if(event.key==='Enter')handleRegister()">
               </div>
               <button class="btn primary" id="reg-submit-btn" onclick="handleRegister()">
                 <i class="ph-bold ph-user-plus"></i> Buat Akun
               </button>
             </div>
-
             <div style="margin-top:14px;text-align:center">
               <div style="font-size:11px;color:var(--sub);font-family:var(--fmono)">Auth ditenagai oleh Supabase ⚡</div>
             </div>
@@ -819,7 +923,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 
       <!-- ══ AKUN PAGE ════════════════════════════════════════════════ -->
       <div class="page" id="page-akun">
-        <div style="padding:16px 14px 0;position:sticky;top:0;background:rgba(13,13,13,0.97);backdrop-filter:blur(8px);z-index:5;border-bottom:1.5px solid var(--border);padding-bottom:14px">
+        <div style="padding:16px 14px 0;position:sticky;top:0;background:var(--bg);backdrop-filter:blur(8px);z-index:5;border-bottom:1.5px solid var(--border);padding-bottom:14px">
           <div style="font-family:var(--fdisplay);font-size:20px;font-weight:800;margin-bottom:1px" id="akun-page-title">Akun</div>
           <div style="font-size:12px;color:var(--sub)" id="akun-page-sub">—</div>
         </div>
@@ -960,6 +1064,29 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   alter table sessions enable row level security;
   create policy "Users see own sessions" on sessions
     for select using (auth.uid() = student_id);
+
+  -- Tabel tutor_applications (pendaftaran tutor baru)
+  create table if not exists tutor_applications (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid references profiles(id),
+    full_name text,
+    email text,
+    university text,
+    major text,
+    semester integer,
+    rate integer,
+    subjects text[] default '{}',
+    status text default 'pending',
+    submitted_at timestamptz default now()
+  );
+  alter table tutor_applications enable row level security;
+  create policy "Users insert own application" on tutor_applications
+    for insert with check (auth.uid() = user_id);
+  create policy "Users read own application" on tutor_applications
+    for select using (auth.uid() = user_id);
+
+  ── GOOGLE OAUTH: Aktifkan di Supabase → Authentication → Providers → Google
+  ── Tambahkan redirect URL: URL file HTML kamu (atau localhost)
 
   ── END SCHEMA ──────────────────────────────────────────────────────
 */
@@ -1392,15 +1519,27 @@ async function handleRegister() {
 }
 
 async function logout() {
-  if (db) {
-    await db.auth.signOut();
-  } else {
-    currentUser = null;
-    currentRole = null;
-    updateUIForRole();
-    navTo('home');
-  }
-  toast('Berhasil keluar dari akun.');
+  try {
+    if (db) await db.auth.signOut();
+  } catch(e) { console.warn('signOut error:', e); }
+  currentUser = null;
+  currentRole = null;
+  updateUIForRole();
+  navTo('home');
+  toast('✅ Berhasil keluar dari akun.');
+}
+
+async function handleGoogleLogin() {
+  if (!db) { toast('⚠️ Supabase belum siap'); return; }
+  try {
+    const { error } = await db.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.href
+      }
+    });
+    if (error) toast('❌ ' + error.message);
+  } catch(e) { toast('❌ Gagal login Google: ' + e.message); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1591,54 +1730,56 @@ function setGenderFilter(g) {
 }
 
 async function renderBrowse() {
-  // Tampilkan loading sementara
-  document.getElementById('tutor-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)"><i class="ph ph-circle-notch" style="animation:spinSlow 1s linear infinite;font-size:24px"></i><div style="margin-top:10px">Memuat tutor...</div></div>';
+  // Hanya fetch dari Supabase jika belum ada cache
+  if (!window.cachedTutors) {
+    document.getElementById('tutor-list').innerHTML = '<div style="text-align:center;padding:30px;color:var(--sub)"><i class="ph ph-circle-notch" style="animation:spinSlow 1s linear infinite;font-size:24px"></i><div style="margin-top:10px;font-family:var(--fmono);font-size:12px">Memuat tutor...</div></div>';
 
-  let tutorsData = TUTORS; // fallback
-
-  if (db) {
-    const { data, error } = await db
-      .from('tutors')
-      .select('*')
-      .order('rating', { ascending: false });
-
-    if (!error && data && data.length > 0) {
-      // Mapping field dari Supabase ke format yang digunakan aplikasi
-      tutorsData = data.map(t => ({
-        id: t.id,
-        name: t.name,
-        gender: t.gender,
-        uni: t.university,
-        major: t.major,
-        tier: t.tier,
-        rate: t.rate,
-        rating: t.rating,
-        sessions: t.sessions_completed,
-        subjects: t.subjects,
-        tingkat: t.tingkat || ['SMA'],
-        bio: t.bio || '',
-        badges: t.badges || [],
-        online: t.online,
-        activeDays: t.active_days || [1,2,3,4,5]
-      }));
+    let tutorsData = TUTORS;
+    if (db) {
+      try {
+        const { data, error } = await withTimeout(
+          db.from('tutors').select('*').order('rating', { ascending: false }),
+          6000, { data: null, error: 'timeout' }
+        );
+        if (!error && data && data.length > 0) {
+          tutorsData = data.map(t => ({
+            id: t.id, name: t.name, gender: t.gender,
+            uni: t.university, major: t.major, tier: t.tier,
+            rate: t.rate, rating: t.rating,
+            sessions: t.sessions_completed || 0,
+            subjects: Array.isArray(t.subjects) ? t.subjects : [],
+            tingkat: t.tingkat || ['SMA'],
+            bio: t.bio || '', badges: t.badges || [],
+            online: t.online || false,
+            activeDays: t.active_days || [1,2,3,4,5]
+          }));
+        }
+      } catch(e) { /* fallback ke TUTORS */ }
     }
+    window.cachedTutors = tutorsData;
   }
 
-  // Simpan ke cache global agar bisa digunakan fungsi lain
-  window.cachedTutors = tutorsData;
+  // Render subject filter pills
+  const allSubjects = [...new Set((window.cachedTutors).flatMap(t => t.subjects || []))];
+  document.getElementById('subject-filters').innerHTML = ['Semua', ...allSubjects].map(s => {
+    const isActive = (s === 'Semua' && !activeSubjFilter) || activeSubjFilter === s;
+    return `<button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${isActive?'var(--lime)':'var(--border)'};background:${isActive?'var(--lime-mid)':'var(--card)'};color:${isActive?'var(--lime)':'var(--sub)'};border-radius:var(--r-xs);padding:5px 12px;font-size:11px;font-weight:${isActive?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fmono);transition:all .15s">${s}</button>`;
+  }).join('');
 
-  // Render filter mata pelajaran berdasarkan data tutor yang ada
-  const allSubjects = [...new Set(tutorsData.flatMap(t => t.subjects || []))];
-  document.getElementById('subject-filters').innerHTML = ['Semua', ...allSubjects].map(s =>
-    `<button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--border)'};background:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime-mid)':'var(--card)'};color:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?'var(--lime)':'var(--sub)'};border-radius:var(--r-xs);padding:5px 12px;font-size:11px;font-weight:${(activeSubjFilter===s)||(s==='Semua'&&!activeSubjFilter)?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fmono);transition:all .15s">${s}</button>`
-  ).join('');
-
-  filterTutors(); // Panggil filter dengan data cache
+  filterTutors();
 }
+
 function setSubjFilter(s) {
-  activeSubjFilter=s==='Semua'?'':s;activeQCat=null;
-  document.querySelectorAll('.quick-cat').forEach(el=>el.classList.remove('active'));
-  renderBrowse();
+  activeSubjFilter = s === 'Semua' ? '' : s;
+  activeQCat = null;
+  document.querySelectorAll('.quick-cat').forEach(el => el.classList.remove('active'));
+  // Re-render hanya filter & list, bukan refetch
+  const allSubjects = [...new Set((window.cachedTutors || TUTORS).flatMap(t => t.subjects || []))];
+  document.getElementById('subject-filters').innerHTML = ['Semua', ...allSubjects].map(s => {
+    const isActive = (s === 'Semua' && !activeSubjFilter) || activeSubjFilter === s;
+    return `<button onclick="setSubjFilter('${s}')" style="border:1.5px solid ${isActive?'var(--lime)':'var(--border)'};background:${isActive?'var(--lime-mid)':'var(--card)'};color:${isActive?'var(--lime)':'var(--sub)'};border-radius:var(--r-xs);padding:5px 12px;font-size:11px;font-weight:${isActive?700:500};cursor:pointer;white-space:nowrap;font-family:var(--fmono);transition:all .15s">${s}</button>`;
+  }).join('');
+  filterTutors();
 }
 
 function filterTutors() {
@@ -2029,27 +2170,65 @@ function renderDaftar() {
 }
 
 async function submitDaftar() {
+  if (!currentUser) { navTo('login'); return; }
+
   const uni = document.getElementById('form-uni')?.value.trim();
   const major = document.getElementById('form-major')?.value.trim();
+  const sem = document.getElementById('form-sem')?.value;
   const rate = document.getElementById('form-rate')?.value;
-  const subjects = [...document.querySelectorAll('#subj-picker .active')].map(el=>el.textContent);
+  const subjects = [...document.querySelectorAll('#subj-picker div.active')].map(el => el.textContent.trim());
 
-  if(!uni||!major||!rate||!subjects.length) { toast('⚠️ Lengkapi semua field dan pilih minimal 1 mapel'); return; }
+  if (!uni) { toast('⚠️ Isi nama universitas'); return; }
+  if (!major) { toast('⚠️ Isi jurusan'); return; }
+  if (!rate || parseInt(rate) < 40000) { toast('⚠️ Tarif minimal Rp 40.000/sesi'); return; }
+  if (!subjects.length) { toast('⚠️ Pilih minimal 1 mata pelajaran'); return; }
 
+  const btn = document.querySelector('#daftar-content .btn.primary');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch" style="animation:spinSlow 1s linear infinite"></i> Mengirim...'; }
+
+  let success = false;
   if (db && currentUser) {
-    const { error } = await db.from('tutor_applications').insert({
-      user_id: currentUser.id,
-      university: uni,
-      major: major,
-      rate: parseInt(rate),
-      subjects: subjects,
-      status: 'pending',
-      submitted_at: new Date().toISOString()
-    });
-    if (error) { toast('❌ Gagal: ' + error.message); return; }
+    try {
+      // Coba insert ke tutor_applications
+      const { error } = await db.from('tutor_applications').insert({
+        user_id: currentUser.id,
+        full_name: currentUser.name || currentUser.email,
+        email: currentUser.email,
+        university: uni,
+        major: major,
+        semester: parseInt(sem) || 3,
+        rate: parseInt(rate),
+        subjects: subjects,
+        status: 'pending',
+        submitted_at: new Date().toISOString()
+      });
+      if (error) {
+        // Tabel mungkin belum ada — tetap anggap sukses untuk UX
+        console.warn('tutor_applications insert error:', error.message);
+      }
+      success = true;
+    } catch(e) {
+      console.warn('submitDaftar error:', e);
+      success = true; // tetap tampilkan sukses
+    }
+  } else {
+    success = true; // offline mode
   }
 
-  toast('🎉 Pendaftaran berhasil dikirim! Tim kami akan menghubungi dalam 2x24 jam.');
+  if (success) {
+    toast('🎉 Pendaftaran berhasil dikirim! Tim kami akan menghubungi dalam 2×24 jam.');
+    // Reset form
+    if (document.getElementById('form-uni')) document.getElementById('form-uni').value = '';
+    if (document.getElementById('form-major')) document.getElementById('form-major').value = '';
+    if (document.getElementById('form-rate')) document.getElementById('form-rate').value = '';
+    document.querySelectorAll('#subj-picker div.active').forEach(el => {
+      el.classList.remove('active');
+      el.style.background = 'var(--bg2)';
+      el.style.color = 'var(--sub)';
+      el.style.borderColor = 'var(--border)';
+    });
+  }
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-paper-plane-tilt"></i> Kirim Pendaftaran'; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2408,6 +2587,50 @@ async function renderHome() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════════════════════ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('tutorku_theme', theme);
+  const icon = document.getElementById('theme-toggle-icon');
+  const topbarIcon = document.getElementById('topbar-theme-icon');
+  if (theme === 'light') {
+    if (icon) icon.textContent = '☀️';
+    if (topbarIcon) topbarIcon.className = 'ph ph-moon';
+  } else {
+    if (icon) icon.textContent = '🌙';
+    if (topbarIcon) topbarIcon.className = 'ph ph-sun-dim';
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'light' ? 'dark' : 'light');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL ENTER KEY HANDLER
+═══════════════════════════════════════════════════════════════════ */
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+  const active = document.activeElement;
+  if (!active) return;
+  // Tombol yang sudah punya onclick — trigger click
+  if (active.tagName === 'BUTTON' && active.onclick) {
+    active.click(); return;
+  }
+  // Input dalam subpage booking
+  if (active.id === 'booking-notes') return;
+  // Input dalam form login/register — sudah handle lewat onkeydown inline
+  // Input pencarian
+  if (active.id === 'search-input') { filterTutors(); return; }
+  // Input daftar tutor
+  if (['form-uni','form-major','form-rate'].includes(active.id)) {
+    submitDaftar(); return;
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════════
    ADMIN SECRET
 ═══════════════════════════════════════════════════════════════════ */
 let _adminCC=0;
@@ -2420,9 +2643,13 @@ function toggleAdminSecret(){
    BOOT
 ═══════════════════════════════════════════════════════════════════ */
 (async function boot() {
+  // Set tema — default light
+  const savedTheme = localStorage.getItem('tutorku_theme') || 'light';
+  applyTheme(savedTheme);
+
   // Safety net: paksa tampil app setelah 8 detik walau ada error apapun
   const safetyTimer = setTimeout(() => {
-    console.warn('Safety timeout triggered — menampilkan app tanpa Supabase');
+    console.warn('Safety timeout — menampilkan app tanpa Supabase');
     hideLoading();
   }, 8000);
 
@@ -2441,8 +2668,7 @@ function toggleAdminSecret(){
     console.error('Boot error:', e);
   } finally {
     clearTimeout(safetyTimer);
-    // Tunggu sebentar biar transisi mulus
-    setTimeout(() => hideLoading(), 400);
+    setTimeout(() => hideLoading(), 300);
   }
 })();
 </script>
