@@ -893,9 +893,13 @@ const SUPABASE_URL_KEY = 'tutorku_sb_url';
 const SUPABASE_KEY_KEY = 'tutorku_sb_key';
 
 function getSavedConfig() {
+  // Ganti dengan URL dan Anon Key Supabase Anda yang sebenarnya
+  const SUPABASE_URL = 'https://kfodznsmqpupuuncdzgi.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtmb2R6bnNtcXB1cHV1bmNkemdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyOTM0NTUsImV4cCI6MjA5MTg2OTQ1NX0.GCVnH8xB_-NMV4BvwtdhTqzfE9E6chKUaDG4qirbq40';
+
   return {
-    url: localStorage.getItem(SUPABASE_URL_KEY) || '',
-    key: localStorage.getItem(SUPABASE_KEY_KEY) || ''
+    url: localStorage.getItem(SUPABASE_URL_KEY) || SUPABASE_URL,
+    key: localStorage.getItem(SUPABASE_KEY_KEY) || SUPABASE_ANON_KEY
   };
 }
 
