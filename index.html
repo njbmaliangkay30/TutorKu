@@ -990,12 +990,20 @@ function saveConfig() {
   location.reload();
 }
 
+// Helper: promise dengan timeout
+function withTimeout(promise, ms, fallback) {
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(fallback), ms))
+  ]);
+}
+
 async function initSupabase() {
   setLoadingStatus('Inisialisasi Supabase...');
   const cfg = getSavedConfig();
 
   if (!cfg.url || !cfg.key) {
-    document.getElementById('loading-screen').classList.add('hide');
+    hideLoading();
     setTimeout(() => {
       document.getElementById('config-modal').style.display = 'flex';
     }, 400);
@@ -1004,22 +1012,27 @@ async function initSupabase() {
 
   try {
     supabase = window.supabase.createClient(cfg.url, cfg.key);
-    setLoadingStatus('Mengecek sesi...');
+  } catch(e) {
+    console.error('Supabase createClient error:', e);
+    setDbStatus(false);
+    return false;
+  }
 
-    // Test connection
-    const { data, error } = await supabase.from('profiles').select('id').limit(1);
-    if (error && error.code !== 'PGRST116') {
-      // Table might not exist yet — still connected
-      console.warn('DB warning:', error.message);
-    }
+  setLoadingStatus('Mengecek sesi...');
 
-    // Check existing session
-    const { data: { session } } = await supabase.auth.getSession();
+  try {
+    // Cek session dengan timeout 5 detik — kalau timeout, lanjut saja
+    const sessionResult = await withTimeout(
+      supabase.auth.getSession(),
+      5000,
+      { data: { session: null } }
+    );
+    const session = sessionResult?.data?.session;
     if (session) {
-      await loadUserProfile(session.user);
+      await withTimeout(loadUserProfile(session.user), 4000, null);
     }
 
-    // Listen for auth changes
+    // Pasang listener auth state change
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         await loadUserProfile(session.user);
@@ -1033,14 +1046,29 @@ async function initSupabase() {
       }
     });
 
-    document.getElementById('sbm-db').textContent = '● Connected';
-    document.getElementById('sbm-db').style.color = 'var(--online)';
+    setDbStatus(true);
     return true;
   } catch (e) {
-    console.error('Supabase init error:', e);
-    document.getElementById('sbm-db').textContent = '✕ Error';
-    document.getElementById('sbm-db').style.color = 'var(--danger)';
-    return true; // still show app
+    console.warn('Supabase init warning (app tetap berjalan):', e);
+    setDbStatus(false);
+    return false;
+  }
+}
+
+function hideLoading() {
+  document.getElementById('loading-screen').classList.add('hide');
+  document.getElementById('layout').style.display = 'flex';
+}
+
+function setDbStatus(ok) {
+  const el = document.getElementById('sbm-db');
+  if (!el) return;
+  if (ok) {
+    el.textContent = '● Connected';
+    el.style.color = 'var(--online)';
+  } else {
+    el.textContent = '○ Offline (demo)';
+    el.style.color = 'var(--warning)';
   }
 }
 
@@ -2380,23 +2408,30 @@ function toggleAdminSecret(){
    BOOT
 ═══════════════════════════════════════════════════════════════════ */
 (async function boot() {
-  // Attach brand click counter for admin
-  document.querySelector('.sb-logo-text')?.addEventListener('click', toggleAdminSecret);
+  // Safety net: paksa tampil app setelah 8 detik walau ada error apapun
+  const safetyTimer = setTimeout(() => {
+    console.warn('Safety timeout triggered — menampilkan app tanpa Supabase');
+    hideLoading();
+  }, 8000);
 
-  await initSupabase();
+  try {
+    document.querySelector('.sb-logo-text')?.addEventListener('click', toggleAdminSecret);
 
-  setLoadingStatus('Memuat data...');
-  await loadStats();
+    await initSupabase();
 
-  updateUIForRole();
-  await renderHome();
-  renderDaftar();
+    setLoadingStatus('Memuat data...');
+    await withTimeout(loadStats(), 4000, null);
 
-  // Hide loading
-  setTimeout(()=>{
-    document.getElementById('loading-screen').classList.add('hide');
-    document.getElementById('layout').style.display='flex';
-  }, 600);
+    updateUIForRole();
+    await withTimeout(renderHome(), 4000, null);
+    renderDaftar();
+  } catch(e) {
+    console.error('Boot error:', e);
+  } finally {
+    clearTimeout(safetyTimer);
+    // Tunggu sebentar biar transisi mulus
+    setTimeout(() => hideLoading(), 400);
+  }
 })();
 </script>
 </body>
