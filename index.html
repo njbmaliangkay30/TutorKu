@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 /* ═══ TOKENS ══════════════════════════════════════════════════════════ */
 :root {
@@ -963,7 +963,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 
   ── END SCHEMA ──────────────────────────────────────────────────────
 */
-let supabase = null;
+let db = null;
 let currentUser = null;
 let currentRole = null;
 
@@ -1011,7 +1011,19 @@ async function initSupabase() {
   }
 
   try {
-    supabase = window.supabase.createClient(cfg.url, cfg.key);
+    // CDN bisa expose di window.supabase atau window.supabase.createClient
+    const createClient =
+      (typeof supabaseJs !== 'undefined' && supabaseJs.createClient) ||
+      (window.supabase?.createClient) ||
+      (window.Supabase?.createClient);
+
+    if (!createClient) {
+      console.error('Supabase library tidak ditemukan. Pastikan CDN berhasil dimuat.');
+      setDbStatus(false);
+      return false;
+    }
+
+    db = createClient(cfg.url, cfg.key);
   } catch(e) {
     console.error('Supabase createClient error:', e);
     setDbStatus(false);
@@ -1023,7 +1035,7 @@ async function initSupabase() {
   try {
     // Cek session dengan timeout 5 detik — kalau timeout, lanjut saja
     const sessionResult = await withTimeout(
-      supabase.auth.getSession(),
+      db.auth.getSession(),
       5000,
       { data: { session: null } }
     );
@@ -1033,7 +1045,7 @@ async function initSupabase() {
     }
 
     // Pasang listener auth state change
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    db.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         await loadUserProfile(session.user);
         updateUIForRole();
@@ -1073,9 +1085,9 @@ function setDbStatus(ok) {
 }
 
 async function loadUserProfile(authUser) {
-  if (!supabase) return;
+  if (!db) return;
   try {
-    const { data: profile } = await supabase
+    const { data: profile } = await db
       .from('profiles')
       .select('*')
       .eq('id', authUser.id)
@@ -1316,7 +1328,7 @@ function showAuthError(msg) {
 }
 
 async function handleLogin() {
-  if (!supabase) { toast('⚠️ Supabase belum dikonfigurasi'); return; }
+  if (!db) { toast('⚠️ Supabase belum dikonfigurasi'); return; }
   const email = document.getElementById('login-email').value.trim();
   const pw = document.getElementById('login-password').value;
   if (!email||!pw) { showAuthError('Email dan password diperlukan'); return; }
@@ -1326,7 +1338,7 @@ async function handleLogin() {
   btn.disabled = true;
   document.getElementById('login-error').style.display='none';
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pw });
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pw });
 
   if (error) {
     showAuthError(error.message === 'Invalid login credentials' ? 'Email atau password salah' : error.message);
@@ -1337,13 +1349,13 @@ async function handleLogin() {
 
   // Update role in profile
   if (data.user) {
-    await supabase.from('profiles').upsert({ id: data.user.id, role: selectedRole }, { onConflict: 'id' });
+    await db.from('profiles').upsert({ id: data.user.id, role: selectedRole }, { onConflict: 'id' });
   }
   toast('✅ Berhasil masuk! Selamat datang 👋');
 }
 
 async function handleRegister() {
-  if (!supabase) { toast('⚠️ Supabase belum dikonfigurasi'); return; }
+  if (!db) { toast('⚠️ Supabase belum dikonfigurasi'); return; }
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pw = document.getElementById('reg-password').value;
@@ -1355,7 +1367,7 @@ async function handleRegister() {
   btn.disabled = true;
   document.getElementById('login-error').style.display='none';
 
-  const { data, error } = await supabase.auth.signUp({ email, password: pw });
+  const { data, error } = await db.auth.signUp({ email, password: pw });
 
   if (error) {
     showAuthError(error.message);
@@ -1365,7 +1377,7 @@ async function handleRegister() {
   }
 
   if (data.user) {
-    await supabase.from('profiles').upsert({
+    await db.from('profiles').upsert({
       id: data.user.id,
       full_name: name,
       role: selectedRole,
@@ -1380,8 +1392,8 @@ async function handleRegister() {
 }
 
 async function logout() {
-  if (supabase) {
-    await supabase.auth.signOut();
+  if (db) {
+    await db.auth.signOut();
   } else {
     currentUser = null;
     currentRole = null;
@@ -1432,9 +1444,9 @@ function updateUIForRole() {
    SUPABASE CRUD HELPERS
 ═══════════════════════════════════════════════════════════════════ */
 async function fetchTutors() {
-  if (!supabase) return null;
+  if (!db) return null;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('tutors')
       .select('*')
       .order('rating', { ascending: false });
@@ -1444,10 +1456,10 @@ async function fetchTutors() {
 }
 
 async function fetchBookings(userId, role) {
-  if (!supabase) return null;
+  if (!db) return null;
   try {
     const col = role === 'tutor' ? 'tutor_id' : 'student_id';
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('bookings')
       .select('*, tutors(*), profiles(*)')
       .eq(col, userId)
@@ -1458,7 +1470,7 @@ async function fetchBookings(userId, role) {
 }
 
 async function createBooking(tutorId, packageId, notes) {
-  if (!supabase || !currentUser) { toast('⚠️ Silakan masuk terlebih dahulu'); return false; }
+  if (!db || !currentUser) { toast('⚠️ Silakan masuk terlebih dahulu'); return false; }
   try {
     const pkg = PKG_SUBSCRIPTIONS.find(p=>p.id===packageId);
     const allTutors = window.cachedTutors || TUTORS;
@@ -1466,7 +1478,7 @@ async function createBooking(tutorId, packageId, notes) {
     if (!pkg || !tutor) return false;
     const total = pkg.sessions * tutor.rate * (pkg.discount ? (1-pkg.discount/100) : 1);
 
-    const { error } = await supabase.from('bookings').insert({
+    const { error } = await db.from('bookings').insert({
       student_id: currentUser.id,
       tutor_id: tutorId,
       package_id: packageId,
@@ -1483,21 +1495,21 @@ async function createBooking(tutorId, packageId, notes) {
 }
 
 async function updateTutorAvailability(tutorId, activeDays) {
-  if (!supabase) return false;
-  const { error } = await supabase.from('tutors').update({ active_days: activeDays }).eq('id', tutorId);
+  if (!db) return false;
+  const { error } = await db.from('tutors').update({ active_days: activeDays }).eq('id', tutorId);
   return !error;
 }
 
 async function submitSessionReview(sessionId, topic, notes, mastery, homework) {
-  if (!supabase) return false;
-  const { error } = await supabase.from('sessions').update({
+  if (!db) return false;
+  const { error } = await db.from('sessions').update({
     topic, notes, mastery, homework, reviewed: true, reviewed_at: new Date().toISOString()
   }).eq('id', sessionId);
   return !error;
 }
 
 async function loadStats() {
-  if (!supabase) {
+  if (!db) {
     document.getElementById('sbm-tutors').textContent = TUTORS.filter(t=>t.online).length;
     document.getElementById('sbm-sessions').textContent = ADMIN_DATA.sessions_month;
     document.getElementById('stat-tutors').textContent = TUTORS.length;
@@ -1506,8 +1518,8 @@ async function loadStats() {
   }
   try {
     const [{ count: tCount }, { count: sCount }] = await Promise.all([
-      supabase.from('tutors').select('*', { count: 'exact', head: true }),
-      supabase.from('sessions').select('*', { count: 'exact', head: true })
+      db.from('tutors').select('*', { count: 'exact', head: true }),
+      db.from('sessions').select('*', { count: 'exact', head: true })
     ]);
     document.getElementById('sbm-tutors').textContent = tCount ?? '—';
     document.getElementById('sbm-sessions').textContent = sCount ?? '—';
@@ -1584,8 +1596,8 @@ async function renderBrowse() {
 
   let tutorsData = TUTORS; // fallback
 
-  if (supabase) {
-    const { data, error } = await supabase
+  if (db) {
+    const { data, error } = await db
       .from('tutors')
       .select('*')
       .order('rating', { ascending: false });
@@ -1754,7 +1766,7 @@ async function bookPackage(tutorId) {
 
   // Try real DB first, fallback to mock
   let success = false;
-  if (supabase && currentUser) {
+  if (db && currentUser) {
     success = await createBooking(tutorId, _selectedPkg, notes);
   } else {
     await new Promise(r=>setTimeout(r,800)); // simulate
@@ -2024,8 +2036,8 @@ async function submitDaftar() {
 
   if(!uni||!major||!rate||!subjects.length) { toast('⚠️ Lengkapi semua field dan pilih minimal 1 mapel'); return; }
 
-  if (supabase && currentUser) {
-    const { error } = await supabase.from('tutor_applications').insert({
+  if (db && currentUser) {
+    const { error } = await db.from('tutor_applications').insert({
       user_id: currentUser.id,
       university: uni,
       major: major,
@@ -2142,7 +2154,7 @@ function toggleDay(i) {
 
 async function saveJadwal() {
   TUTOR_DATA.activeDays = [...(window._editDays||[])];
-  if (supabase && currentUser) {
+  if (db && currentUser) {
     await updateTutorAvailability(currentUser.id, TUTOR_DATA.activeDays);
   }
   toast('✅ Jadwal disimpan!');
@@ -2190,7 +2202,7 @@ async function submitReview(sessionId) {
   const hw = document.getElementById('rev-hw')?.value.trim();
   if (!topic||!notes) { toast('⚠️ Topik dan catatan harus diisi'); return; }
 
-  if (supabase) {
+  if (db) {
     await submitSessionReview(sessionId, topic, notes, window._selectedMastery, hw);
   }
 
@@ -2373,8 +2385,8 @@ function renderAdminSistem() {
 ═══════════════════════════════════════════════════════════════════ */
 async function renderHome() {
   // Gunakan cached tutors kalau sudah ada, atau fetch dari Supabase
-  if (!window.cachedTutors && supabase) {
-    const { data, error } = await supabase
+  if (!window.cachedTutors && db) {
+    const { data, error } = await db
       .from('tutors')
       .select('*')
       .order('rating', { ascending: false })
