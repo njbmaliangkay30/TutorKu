@@ -76,45 +76,67 @@
 
 /* ═══ LIGHT THEME (Gen Z — default) ══════════════════════════════════ */
 [data-theme="light"] {
-  --bg: #F5F2FF;
+  --bg: #F4F1FF;
   --bg2: #FFFFFF;
   --bg3: #EDE8FF;
   --card: #FFFFFF;
   --card2: #F0ECFF;
-  --border: #D8D0F5;
-  --border2: #C8BEF0;
+  --border: #C8BFE8;
+  --border2: #B4A8E0;
 
-  --text: #1A1033;
-  --sub: #6B5F8A;
-  --light: #9B8EBB;
-  --muted: #D0C8EA;
+  /* Text — WCAG AA compliant */
+  --text: #120D2E;
+  --sub: #4A3D6B;
+  --light: #7B6FA0;
+  --muted: #C4BAE8;
 
-  --primary: #6C3FD8;
-  --primary-bright: #8B5CF6;
-  --primary-dim: rgba(108,63,216,0.12);
+  --primary: #5B21B6;
+  --primary-bright: #7C3AED;
+  --primary-dim: rgba(91,33,182,0.10);
 
-  --lime: #7C3AED;
-  --lime-dim: rgba(124,58,237,0.08);
-  --lime-mid: rgba(124,58,237,0.14);
+  --lime: #6D28D9;
+  --lime-dim: rgba(109,40,217,0.07);
+  --lime-mid: rgba(109,40,217,0.13);
 
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --success: #10B981;
-  --online: #10B981;
+  --danger: #DC2626;
+  --warning: #D97706;
+  --success: #059669;
+  --online: #059669;
 
-  --gold: #D97706;
-  --gold-bg: rgba(217,119,6,0.1);
-  --silver: #6B7280;
-  --silver-bg: rgba(107,114,128,0.1);
-  --bronze: #92400E;
-  --bronze-bg: rgba(146,64,14,0.1);
+  --gold: #B45309;
+  --gold-bg: rgba(180,83,9,0.09);
+  --silver: #4B5563;
+  --silver-bg: rgba(75,85,99,0.09);
+  --bronze: #78350F;
+  --bronze-bg: rgba(120,53,15,0.09);
 
-  --sh0: 2px 2px 0 rgba(108,63,216,0.15);
-  --sh1: 3px 3px 0 rgba(108,63,216,0.2);
-  --sh2: 5px 5px 0 rgba(108,63,216,0.25);
+  --sh0: 2px 2px 0 rgba(91,33,182,0.12);
+  --sh1: 3px 3px 0 rgba(91,33,182,0.18);
+  --sh2: 5px 5px 0 rgba(91,33,182,0.22);
   --sh-lime: 3px 3px 0 var(--lime);
   --sh-green: 3px 3px 0 var(--primary-bright);
 }
+
+/* Tombol primary di light mode selalu putih */
+[data-theme="light"] .btn.primary {
+  color: #FFFFFF !important;
+  background: var(--lime);
+}
+[data-theme="light"] .btn.primary:hover { background: var(--primary); }
+/* Input di light mode */
+[data-theme="light"] .input {
+  background: #FAFAFA;
+  color: var(--text);
+  border-color: var(--border);
+}
+[data-theme="light"] .input::placeholder { color: var(--light); }
+/* Card di light mode */
+[data-theme="light"] .card,
+[data-theme="light"] .card-brutal { background: #FFFFFF; border-color: var(--border); }
+/* Toast */
+[data-theme="light"] #toast { background: #FFFFFF; color: var(--text); }
+/* Hero CTA */
+[data-theme="light"] .hero-cta { color: #FFFFFF; }
 
 /* ═══ RESET ═══════════════════════════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent }
@@ -125,7 +147,60 @@ body {
   color: var(--text);
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
+
   transition: background .25s, color .25s;
+}
+
+/* ═══ BRAND BACKGROUND TEXTURE ════════════════════════════════════ */
+/* Dot grid pattern — identitas visual tutorku */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(200,255,0,0.18) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.55;
+}
+[data-theme="light"] body::before {
+  background-image: radial-gradient(circle, rgba(109,40,217,0.13) 1px, transparent 1px);
+  opacity: 0.7;
+}
+/* Branded ambient gradient blob */
+body::after {
+  content: '';
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  /* Top-left glow */
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  top: -120px; left: -80px;
+  background: radial-gradient(circle at center, rgba(26,58,40,0.45) 0%, transparent 70%);
+  filter: blur(60px);
+}
+[data-theme="light"] body::after {
+  background: radial-gradient(circle at center, rgba(109,40,217,0.18) 0%, transparent 70%);
+}
+/* Second blob bottom-right */
+#brand-blob-br {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  width: 360px; height: 360px;
+  border-radius: 50%;
+  bottom: -80px; right: -60px;
+  background: radial-gradient(circle at center, rgba(200,255,0,0.12) 0%, transparent 70%);
+  filter: blur(50px);
+}
+[data-theme="light"] #brand-blob-br {
+  background: radial-gradient(circle at center, rgba(91,33,182,0.12) 0%, transparent 70%);
+}
+/* Semua konten di atas texture */
+#layout, #loading-screen, #config-modal, #toast, #subpage {
+  position: relative;
+  z-index: 1;
 }
 input,textarea,select,button { font-family: var(--fbody) }
 ::-webkit-scrollbar { width: 4px }
@@ -179,6 +254,7 @@ input,textarea,select,button { font-family: var(--fbody) }
   border-right: 2px solid var(--border);
   display: flex; flex-direction: column;
   position: relative; z-index: 10; overflow: hidden;
+  backdrop-filter: none;
 }
 .sb-brand {
   padding: 22px 20px 18px;
@@ -270,7 +346,7 @@ input,textarea,select,button { font-family: var(--fbody) }
   transition: all .15s;
 }
 .tb-btn:hover { border-color: var(--lime); color: var(--lime) }
-#screen { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth }
+#screen { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; z-index: 1; }
 
 /* ─── BOTTOM NAV ──────────────────────────────────────────────────── */
 #bottomnav {
@@ -335,10 +411,11 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 }
 .btn:active { transform: scale(.97) }
 .btn.primary {
-  background: var(--lime); color: #fff; border-color: var(--lime);
+  background: var(--lime); color: #000; border-color: var(--lime);
   box-shadow: var(--sh1);
 }
-[data-theme="dark"] .btn.primary { color: #000; }
+/* In dark mode lime is bright yellow-green -> black text is correct.
+   In light mode lime is dark purple -> white text needed (override in light theme section) */
 .btn.primary:hover { box-shadow: var(--sh2); transform: translate(-1px,-1px) }
 .btn.secondary {
   background: transparent; color: var(--lime);
@@ -369,7 +446,7 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 .avatar {
   border-radius: var(--r-sm); display: flex;
   align-items: center; justify-content: center;
-  font-weight: 800; color: #000; flex-shrink: 0;
+  font-weight: 800; color: rgba(255,255,255,0.92); flex-shrink: 0;
   font-family: var(--fdisplay);
 }
 .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; border: 1px solid var(--border) }
@@ -424,10 +501,21 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 }
 .hero::before {
   content: ''; position: absolute; inset: 0;
-  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0px, rgba(255,255,255,.015) 1px, transparent 1px, transparent 20px),
-                    repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0px, rgba(255,255,255,.015) 1px, transparent 1px, transparent 20px);
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 22px),
+                    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0px, rgba(255,255,255,.025) 1px, transparent 1px, transparent 22px);
   pointer-events: none;
 }
+/* Hero brand glow blob */
+.hero::after {
+  content: ''; position: absolute;
+  width: 200px; height: 200px;
+  top: -60px; right: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,255,0,0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+[data-theme="light"] .hero { background: linear-gradient(135deg, #4C1D95 0%, #5B21B6 60%, #6D28D9 100%); border-color: rgba(167,139,250,0.4); }
+[data-theme="light"] .hero::after { background: radial-gradient(circle, rgba(196,181,253,0.3) 0%, transparent 70%); }
 .hero-eyebrow {
   font-size: 9px; font-weight: 700; color: var(--lime);
   letter-spacing: .15em; text-transform: uppercase;
@@ -623,13 +711,73 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
   #topbar { display: none }
   #bottomnav { display: none }
 }
+
+/* ─── LIGHT MODE: Additional readability fixes ─────────────────── */
+/* Topbar */
+[data-theme="light"] #topbar { background: rgba(255,255,255,0.96); border-bottom-color: var(--border); }
+[data-theme="light"] .tb-logo-text { color: var(--lime); }
+[data-theme="light"] .tb-btn { background: var(--bg3); border-color: var(--border); color: var(--sub); }
+/* Bottom nav */
+[data-theme="light"] #bottomnav { background: rgba(255,255,255,0.97); border-top-color: var(--border); }
+[data-theme="light"] .nav-label { color: var(--light); }
+/* Page header */
+[data-theme="light"] .page-header { background: rgba(244,241,255,0.96); border-bottom-color: var(--border); }
+/* Tutor card */
+[data-theme="light"] .tutor-card { background: #FFFFFF; border-color: var(--border); }
+[data-theme="light"] .tutor-card:hover { border-color: var(--lime); box-shadow: var(--sh-lime); }
+/* Quick cat */
+[data-theme="light"] .quick-cat { background: #FFFFFF; border-color: var(--border); }
+[data-theme="light"] .quick-cat span { color: var(--sub); }
+/* Stats labels */
+[data-theme="light"] .sb-metric-l { color: var(--sub); }
+[data-theme="light"] .sb-badge { background: var(--lime); color: #FFF; }
+/* Points card in light */
+[data-theme="light"] .points-card { background: linear-gradient(135deg, #4C1D95, #5B21B6); border-color: rgba(139,92,246,0.5); }
+/* XP label */
+[data-theme="light"] .xp-label { color: rgba(255,255,255,0.6); }
+/* Progress bar */
+[data-theme="light"] .xp-progress-bg { background: rgba(0,0,0,0.25); }
+/* Section labels on scroll areas */
+[data-theme="light"] .sb-section-label { color: var(--light); }
+/* Select arrow in light mode */
+[data-theme="light"] select.input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234A3D6B'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+/* Role buttons */
+[data-theme="light"] .role-btn { background: var(--bg3); border-color: var(--border); }
+[data-theme="light"] .role-btn:hover { border-color: var(--lime); background: var(--lime-dim); }
+[data-theme="light"] .role-btn-desc { color: var(--sub); }
+/* Auth box */
+[data-theme="light"] .auth-box { background: #FFFFFF; border-color: var(--border); }
+/* Config box */
+[data-theme="light"] .config-box { background: #FFFFFF; border-color: var(--lime); }
+[data-theme="light"] .config-note { background: var(--bg3); border-color: var(--border); color: var(--sub); }
+/* Metric card */
+[data-theme="light"] .metric-card { background: #FFFFFF; border-color: var(--border); }
+/* Pkg card */
+[data-theme="light"] .pkg-card { background: var(--bg3); border-color: var(--border); }
+[data-theme="light"] .pkg-badge { background: var(--lime); color: #FFF; }
+/* Loading screen dots */
+[data-theme="light"] #ls-dots {
+  background-image: radial-gradient(circle, rgba(109,40,217,0.15) 1.5px, transparent 1.5px) !important;
+}
+/* Gender chips stay vibrant in both modes */
+.gender-chip.F { background: rgba(236,72,153,0.1); color: #BE185D; border-color: rgba(236,72,153,0.25); }
+.gender-chip.M { background: rgba(59,130,246,0.1); color: #1D4ED8; border-color: rgba(59,130,246,0.25); }
+[data-theme="dark"] .gender-chip.F { background: rgba(255,80,160,0.1); color: #FF50A0; border-color: rgba(255,80,160,0.25); }
+[data-theme="dark"] .gender-chip.M { background: rgba(80,160,255,0.1); color: #50A0FF; border-color: rgba(80,160,255,0.25); }
+
 </style>
 </head>
 <body>
+<div id="brand-blob-br" aria-hidden="true"></div>
 
 <!-- ══ LOADING SCREEN ════════════════════════════════════════════════ -->
 <div id="loading-screen">
+  <div id="ls-dots" style="position:absolute;inset:0;background-image:radial-gradient(circle, var(--lime-mid) 1.5px, transparent 1.5px);background-size:28px 28px;pointer-events:none;opacity:0.8"></div>
   <div class="loading-logo">tutorku</div>
+  <div style="display:flex;gap:5px;margin-top:-4px;margin-bottom:2px"><span style="width:8px;height:3px;background:var(--lime);border-radius:2px;opacity:0.8"></span><span style="width:18px;height:3px;background:var(--lime);border-radius:2px;opacity:0.5"></span><span style="width:8px;height:3px;background:var(--lime);border-radius:2px;opacity:0.3"></span></div>
+  <div style="font-family:var(--fmono);font-size:9px;color:var(--sub);letter-spacing:.15em;margin-bottom:20px;text-transform:uppercase">// platform tutor terverifikasi</div>
   <div class="loading-bar"><div class="loading-bar-fill"></div></div>
   <div class="loading-status" id="loading-status">Menghubungkan ke Supabase...</div>
 </div>
@@ -651,6 +799,9 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
     <div class="config-note">
       💡 Buat project di <strong style="color:var(--lime)">supabase.com</strong> → Settings → API.<br>
       Kredensial disimpan di localStorage browser kamu.<br><br>
+      <span style="color:var(--warning)">⚠️ PENTING — Redirect URL:</span> Di Supabase Dashboard →<br>
+      <strong>Authentication → URL Configuration</strong>, tambahkan URL deploy kamu di <strong>Redirect URLs</strong>:<br>
+      <span style="color:var(--lime)" id="cfg-redirect-hint">—</span><br><br>
       Jalankan SQL berikut di Supabase SQL Editor untuk membuat tabel yang dibutuhkan:<br><br>
       <span style="color:var(--lime)">-- Jalankan schema SQL di dokumentasi tutorku v5</span>
     </div>
@@ -743,6 +894,8 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
       <div class="page active" id="page-home">
         <!-- Hero -->
         <div class="hero stagger-1">
+          <!-- Branded decoration -->
+          <div style="position:absolute;top:14px;right:14px;font-family:var(--fmono);font-size:9px;font-weight:700;color:rgba(255,255,255,0.2);letter-spacing:.12em;user-select:none;pointer-events:none">tutorku<br>v5.0</div>
           <div class="hero-eyebrow"><span>◆</span> PLATFORM TUTOR TERVERIFIKASI</div>
           <div class="hero-title">Belajar lebih<br>cerdas dengan <span class="accent">tutor terbaik</span></div>
           <div class="hero-sub">Temukan tutor mahasiswa terverifikasi untuk pelajaran favoritmu. Fleksibel, terjangkau, efektif.</div>
@@ -1107,6 +1260,17 @@ function getSavedConfig() {
     key: localStorage.getItem(SUPABASE_KEY_KEY) || SUPABASE_ANON_KEY
   };
 }
+
+// Tampilkan redirect URL hint di config modal
+(function showRedirectHint() {
+  const el = document.getElementById('cfg-redirect-hint');
+  if (el) el.textContent = window.location.origin + window.location.pathname;
+  // Run again after DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    const el2 = document.getElementById('cfg-redirect-hint');
+    if (el2) el2.textContent = window.location.origin + window.location.pathname;
+  });
+})();
 
 function saveConfig() {
   const url = document.getElementById('cfg-url').value.trim();
@@ -1494,7 +1658,8 @@ async function handleRegister() {
   btn.disabled = true;
   document.getElementById('login-error').style.display='none';
 
-  const { data, error } = await db.auth.signUp({ email, password: pw });
+  const _redir = window.location.origin + window.location.pathname;
+  const { data, error } = await db.auth.signUp({ email, password: pw, options: { emailRedirectTo: _redir } });
 
   if (error) {
     showAuthError(error.message);
@@ -1532,10 +1697,12 @@ async function logout() {
 async function handleGoogleLogin() {
   if (!db) { toast('⚠️ Supabase belum siap'); return; }
   try {
+    // Gunakan origin (bukan href) agar tidak membawa hash/query yang bisa menyebabkan redirect loop
+    const redirectTo = window.location.origin + window.location.pathname;
     const { error } = await db.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href
+        redirectTo: redirectTo
       }
     });
     if (error) toast('❌ ' + error.message);
