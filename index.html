@@ -885,6 +885,84 @@ select.input { appearance: none; background-image: url("data:image/svg+xml,%3Csv
 /* ═══════════════════════════════════════════════════════════════════
    SUPABASE INIT
 ═══════════════════════════════════════════════════════════════════ */
+/*
+  ── SUPABASE SQL SCHEMA (jalankan di Supabase SQL Editor) ──────────
+
+  -- Tabel profiles (user)
+  create table if not exists profiles (
+    id uuid primary key references auth.users(id) on delete cascade,
+    full_name text,
+    email text,
+    role text default 'student',
+    created_at timestamptz default now()
+  );
+  alter table profiles enable row level security;
+  create policy "Users manage own profile" on profiles
+    for all using (auth.uid() = id) with check (auth.uid() = id);
+
+  -- Tabel tutors
+  create table if not exists tutors (
+    id text primary key,
+    name text not null,
+    gender text,
+    university text,
+    major text,
+    tier text default 'Bronze',
+    rate integer default 50000,
+    rating numeric default 4.5,
+    sessions_completed integer default 0,
+    subjects text[] default '{}',
+    tingkat text[] default '{"SMA"}',
+    bio text,
+    badges text[] default '{}',
+    online boolean default false,
+    active_days integer[] default '{1,2,3,4,5}',
+    created_at timestamptz default now()
+  );
+  alter table tutors enable row level security;
+  create policy "Public read tutors" on tutors for select using (true);
+  create policy "Admin insert tutors" on tutors for insert with check (true);
+
+  -- Tabel bookings
+  create table if not exists bookings (
+    id uuid primary key default gen_random_uuid(),
+    student_id uuid references profiles(id),
+    tutor_id text references tutors(id),
+    package_id text,
+    sessions_total integer,
+    sessions_remaining integer,
+    amount numeric,
+    status text default 'pending',
+    notes text,
+    created_at timestamptz default now()
+  );
+  alter table bookings enable row level security;
+  create policy "Users see own bookings" on bookings
+    for select using (auth.uid() = student_id);
+  create policy "Users create own bookings" on bookings
+    for insert with check (auth.uid() = student_id);
+
+  -- Tabel sessions
+  create table if not exists sessions (
+    id uuid primary key default gen_random_uuid(),
+    booking_id uuid references bookings(id),
+    tutor_id text,
+    student_id uuid,
+    topic text,
+    notes text,
+    mastery integer,
+    homework text,
+    reviewed boolean default false,
+    reviewed_at timestamptz,
+    duration_minutes integer,
+    created_at timestamptz default now()
+  );
+  alter table sessions enable row level security;
+  create policy "Users see own sessions" on sessions
+    for select using (auth.uid() = student_id);
+
+  ── END SCHEMA ──────────────────────────────────────────────────────
+*/
 let supabase = null;
 let currentUser = null;
 let currentRole = null;
@@ -1355,7 +1433,8 @@ async function createBooking(tutorId, packageId, notes) {
   if (!supabase || !currentUser) { toast('⚠️ Silakan masuk terlebih dahulu'); return false; }
   try {
     const pkg = PKG_SUBSCRIPTIONS.find(p=>p.id===packageId);
-    const tutor = TUTORS.find(t=>t.id===tutorId);
+    const allTutors = window.cachedTutors || TUTORS;
+    const tutor = allTutors.find(t=>t.id===tutorId);
     if (!pkg || !tutor) return false;
     const total = pkg.sessions * tutor.rate * (pkg.discount ? (1-pkg.discount/100) : 1);
 
@@ -1540,7 +1619,8 @@ const list = tutors.filter(t => {
 let _selectedPkg='pkg-single', _selectedTutorId='';
 
 function openTutorDetail(id) {
-  const t=TUTORS.find(x=>x.id===id);if(!t)return;
+  const allTutors = window.cachedTutors || TUTORS;
+  const t=allTutors.find(x=>x.id===id);if(!t)return;
   const activeDayNames=t.activeDays.map(d=>DAYS[d]).join(', ');
   openSubpage(`
     <div class="page-header">
@@ -1632,7 +1712,8 @@ function selectPkg(pkgId, tutorId) {
 }
 
 async function bookPackage(tutorId) {
-  const t=TUTORS.find(x=>x.id===tutorId);
+  const allTutors = window.cachedTutors || TUTORS;
+  const t=allTutors.find(x=>x.id===tutorId);
   const pkg=PKG_SUBSCRIPTIONS.find(x=>x.id===_selectedPkg);
   if(!t||!pkg)return;
 
@@ -2262,7 +2343,26 @@ function renderAdminSistem() {
 /* ═══════════════════════════════════════════════════════════════════
    HOME RENDER
 ═══════════════════════════════════════════════════════════════════ */
-function renderHome() {
+async function renderHome() {
+  // Gunakan cached tutors kalau sudah ada, atau fetch dari Supabase
+  if (!window.cachedTutors && supabase) {
+    const { data, error } = await supabase
+      .from('tutors')
+      .select('*')
+      .order('rating', { ascending: false })
+      .limit(3);
+    if (!error && data && data.length > 0) {
+      window.cachedTutors = data.map(t => ({
+        id: t.id, name: t.name, gender: t.gender,
+        uni: t.university, major: t.major, tier: t.tier,
+        rate: t.rate, rating: t.rating,
+        sessions: t.sessions_completed,
+        subjects: t.subjects || [], tingkat: t.tingkat || ['SMA'],
+        bio: t.bio || '', badges: t.badges || [],
+        online: t.online, activeDays: t.active_days || [1,2,3,4,5]
+      }));
+    }
+  }
   const tutors = window.cachedTutors || TUTORS;
   document.getElementById('home-tutors').innerHTML = tutors.slice(0,3).map(t => createTutorCardHTML(t)).join('');
 }
@@ -2289,7 +2389,7 @@ function toggleAdminSecret(){
   await loadStats();
 
   updateUIForRole();
-  renderHome();
+  await renderHome();
   renderDaftar();
 
   // Hide loading
